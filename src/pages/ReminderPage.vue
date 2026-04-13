@@ -1,0 +1,28 @@
+<script setup lang="ts">
+import { onMounted } from "vue";
+import PageHeader from "@/components/PageHeader.vue";
+import TaskList from "@/components/TaskList.vue";
+import { useTaskStore } from "@/stores/task";
+
+const taskStore = useTaskStore();
+
+onMounted(() => {
+  if (!taskStore.tasks.length) {
+    void taskStore.loadTasks();
+  }
+});
+</script>
+
+<template>
+  <section class="page-stack">
+    <PageHeader
+      title="Reminder"
+      description="Only tasks that should be actionable now belong here."
+    />
+    <TaskList
+      :tasks="taskStore.reminderTasks"
+      empty-title="Nothing needs your attention right now"
+      empty-description="Future tasks stay hidden until their trigger time arrives."
+    />
+  </section>
+</template>

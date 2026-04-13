@@ -1,0 +1,10 @@
+{
+  "name": "ZenWhen",
+  "short_name": "ZenWhen",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f2e8",
+  "theme_color": "#1c2430",
+  "description": "A low-interruption reminder app that shows tasks when it is time to act.",
+  "icons": []
+}

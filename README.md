@@ -32,7 +32,7 @@ The app is designed to reduce cognitive load:
 
 ## Project Status
 
-This repository is currently in planning and setup stage.
+This repository now includes the initial Vue 3 + TypeScript + Vite application skeleton and is ready for feature development.
 
 Available documentation:
 
@@ -65,6 +65,25 @@ The first implementation milestone is:
 2. Compute `triggerAt`
 3. Split tasks into `Reminder` and `Inbox`
 4. Persist tasks locally after refresh
+
+## Getting Started
+
+```bash
+npm install
+npm run dev
+```
+
+Build for production:
+
+```bash
+npm run build
+```
+
+Type-check the app:
+
+```bash
+npm run typecheck
+```
 
 ## License
 

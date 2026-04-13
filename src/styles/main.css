@@ -1,0 +1,253 @@
+:root {
+  color-scheme: light;
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #1c2430;
+  background:
+    radial-gradient(circle at top left, rgba(255, 209, 102, 0.35), transparent 28%),
+    linear-gradient(180deg, #f6f2e8 0%, #eef4f8 100%);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 20px 56px;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-end;
+  padding: 32px;
+  border: 1px solid rgba(28, 36, 48, 0.08);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 20px 70px rgba(28, 36, 48, 0.08);
+}
+
+.eyebrow,
+.page-kicker {
+  margin: 0 0 10px;
+  font-size: 0.82rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8d6a31;
+}
+
+.hero h1,
+.page-header h2 {
+  margin: 0;
+  line-height: 1.05;
+}
+
+.hero h1 {
+  max-width: 12ch;
+  font-size: clamp(2.2rem, 5vw, 4.5rem);
+}
+
+.hero-copy,
+.page-description,
+.empty-state p,
+.task-notes {
+  color: #536170;
+}
+
+.hero-copy {
+  max-width: 52ch;
+  margin: 14px 0 0;
+}
+
+.new-task-link,
+.primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999px;
+  padding: 14px 20px;
+  background: #1c2430;
+  color: #f8fafc;
+  font-weight: 600;
+}
+
+.main-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 18px 0 24px;
+}
+
+.nav-link {
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(28, 36, 48, 0.08);
+  color: #536170;
+}
+
+.nav-link.active {
+  background: #fff7df;
+  color: #523b14;
+  border-color: rgba(141, 106, 49, 0.24);
+}
+
+.content-panel {
+  padding: 30px;
+  border-radius: 28px;
+  border: 1px solid rgba(28, 36, 48, 0.08);
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 20px 70px rgba(28, 36, 48, 0.07);
+}
+
+.page-stack {
+  display: grid;
+  gap: 22px;
+}
+
+.page-header {
+  display: grid;
+  gap: 10px;
+}
+
+.page-description {
+  margin: 0;
+  max-width: 64ch;
+}
+
+.task-list {
+  display: grid;
+  gap: 16px;
+}
+
+.task-card,
+.empty-state,
+.task-form {
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(28, 36, 48, 0.08);
+  background: rgba(251, 252, 253, 0.92);
+}
+
+.task-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.task-status,
+.task-edit-link {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.task-status {
+  color: #8d3d1f;
+}
+
+.task-edit-link {
+  color: #335c91;
+}
+
+.task-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 18px 0 0;
+}
+
+.task-meta dt {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #667788;
+}
+
+.task-meta dd {
+  margin: 4px 0 0;
+  font-weight: 600;
+}
+
+.task-form {
+  display: grid;
+  gap: 16px;
+}
+
+.task-form label {
+  display: grid;
+  gap: 8px;
+}
+
+.task-form input,
+.task-form textarea {
+  width: 100%;
+  border: 1px solid rgba(28, 36, 48, 0.12);
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: #fff;
+}
+
+.trigger-preview {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #fff7df;
+  color: #523b14;
+}
+
+.trigger-preview p,
+.empty-state h3,
+.empty-state p {
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  .app-shell {
+    padding: 20px 14px 36px;
+  }
+
+  .hero,
+  .content-panel {
+    padding: 20px;
+  }
+
+  .hero {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
