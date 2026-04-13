@@ -10,6 +10,7 @@ import {
   formatMonthLabel,
   getMonthGrid,
   nowIso,
+  startOfMonthKey,
   toDateKey,
   todayKey,
 } from "@/utils/date";
@@ -51,10 +52,17 @@ const selectedDayLabel = computed(() => formatLongDate(selectedDateKey.value));
 
 function showPreviousMonth() {
   visibleMonth.value = addMonths(visibleMonth.value, -1);
+  selectedDateKey.value = startOfMonthKey(visibleMonth.value);
 }
 
 function showNextMonth() {
   visibleMonth.value = addMonths(visibleMonth.value, 1);
+  selectedDateKey.value = startOfMonthKey(visibleMonth.value);
+}
+
+function jumpToToday() {
+  visibleMonth.value = nowIso();
+  selectedDateKey.value = todayKey();
 }
 
 function selectDay(dateKey: string) {
@@ -77,7 +85,10 @@ function selectDay(dateKey: string) {
 
     <section v-else class="calendar-shell">
       <div class="calendar-toolbar">
-        <button class="secondary-button" type="button" @click="showPreviousMonth">Previous</button>
+        <div class="calendar-toolbar-actions">
+          <button class="secondary-button" type="button" @click="showPreviousMonth">Previous</button>
+          <button class="secondary-button" type="button" @click="jumpToToday">Today</button>
+        </div>
         <h3>{{ formatMonthLabel(visibleMonth) }}</h3>
         <button class="secondary-button" type="button" @click="showNextMonth">Next</button>
       </div>

@@ -36,6 +36,10 @@ export function addMonths(value: string, months: number) {
   return dayjs(value).add(months, "month").toISOString();
 }
 
+export function startOfMonthKey(value: string) {
+  return dayjs(value).startOf("month").format("YYYY-MM-DD");
+}
+
 export function getMonthGrid(value: string) {
   const monthStart = dayjs(value).startOf("month");
   const gridStart = monthStart.startOf("week");

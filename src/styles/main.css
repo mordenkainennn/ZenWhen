@@ -236,6 +236,12 @@ button:disabled {
   gap: 12px;
 }
 
+.calendar-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .calendar-toolbar h3,
 .day-panel-header h3,
 .day-task-card h4 {
@@ -546,6 +552,10 @@ button:disabled {
   .review-group-header {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .calendar-toolbar-actions {
+    width: 100%;
   }
 
   .loading-state {
