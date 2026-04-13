@@ -1,5 +1,6 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
+import { scanAndNotifyTasks } from "@/services/notification-service";
 import { createTask, deleteTask, getTaskById, listTasks, updateTask } from "@/services/task-service";
 import type { Task } from "@/types/task";
 import { addDays, nowIso } from "@/utils/date";
@@ -32,11 +33,31 @@ export const useTaskStore = defineStore("tasks", () => {
     );
   });
 
+  async function refreshTasks() {
+    tasks.value = await listTasks();
+  }
+
+  async function syncTriggeredNotifications() {
+    await scanAndNotifyTasks(tasks.value);
+    await refreshTasks();
+  }
+
   async function loadTasks() {
     loading.value = true;
 
     try {
-      tasks.value = await listTasks();
+      await refreshTasks();
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function loadTasksAndSyncNotifications() {
+    loading.value = true;
+
+    try {
+      await refreshTasks();
+      await syncTriggeredNotifications();
     } finally {
       loading.value = false;
     }
@@ -44,12 +65,14 @@ export const useTaskStore = defineStore("tasks", () => {
 
   async function createNewTask(task: Task) {
     await createTask(task);
-    tasks.value = await listTasks();
+    await refreshTasks();
+    await syncTriggeredNotifications();
   }
 
   async function saveTask(task: Task) {
     await updateTask(task);
-    tasks.value = await listTasks();
+    await refreshTasks();
+    await syncTriggeredNotifications();
   }
 
   async function completeTask(id: string) {
@@ -65,12 +88,14 @@ export const useTaskStore = defineStore("tasks", () => {
       updatedAt: nowIso(),
     });
 
-    tasks.value = await listTasks();
+    await refreshTasks();
+    await syncTriggeredNotifications();
   }
 
   async function removeTask(id: string) {
     await deleteTask(id);
-    tasks.value = await listTasks();
+    await refreshTasks();
+    await syncTriggeredNotifications();
   }
 
   async function findTask(id: string) {
@@ -88,7 +113,10 @@ export const useTaskStore = defineStore("tasks", () => {
     reminderTasks,
     inboxTasks,
     reviewTasks,
+    refreshTasks,
+    syncTriggeredNotifications,
     loadTasks,
+    loadTasksAndSyncNotifications,
     createNewTask,
     saveTask,
     completeTask,

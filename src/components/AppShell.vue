@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView, useRoute } from "vue-router";
-import { requestNotificationPermission, scanAndNotifyTasks } from "@/services/notification-service";
+import { requestNotificationPermission } from "@/services/notification-service";
 import { useTaskStore } from "@/stores/task";
 
 const route = useRoute();
@@ -18,8 +18,7 @@ async function enableNotifications() {
   taskStore.setNotificationPermission(permission);
 
   if (permission === "granted") {
-    await scanAndNotifyTasks(taskStore.tasks);
-    await taskStore.loadTasks();
+    await taskStore.syncTriggeredNotifications();
   }
 }
 </script>
