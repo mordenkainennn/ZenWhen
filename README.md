@@ -1,0 +1,71 @@
+# ZenWhen
+
+ZenWhen is a low-interruption reminder system built around one idea:
+
+> tasks should appear when it is time to act, not compete for attention all day
+
+This project is a PWA-first personal reminder app. Unlike a traditional todo list, future tasks stay hidden by default and only move into the main view when their `triggerAt` time arrives.
+
+## Core Concept
+
+- `dueAt`: when something needs to be done
+- `remindBeforeMinutes`: how early to surface it
+- `triggerAt = dueAt - remindBeforeMinutes`
+
+The app is designed to reduce cognitive load:
+
+- `Reminder`: only shows tasks that should be actionable now
+- `Inbox`: keeps future tasks out of the way
+- `Review`: provides a low-frequency safety check for upcoming tasks
+- `Calendar`: offers a simple time-distribution view
+
+## Planned Stack
+
+- Vue 3
+- TypeScript
+- Vite
+- Pinia
+- dayjs
+- Dexie + IndexedDB
+- PWA support for installability and local notifications
+- Cloudflare Pages for deployment
+
+## Project Status
+
+This repository is currently in planning and setup stage.
+
+Available documentation:
+
+- Product document: [docs/dev.md](docs/dev.md)
+- Technical plan: [docs/technical-plan.md](docs/technical-plan.md)
+
+## MVP Scope
+
+- Create, edit, complete, and delete tasks
+- Hide future tasks by default
+- Show triggered tasks in the main reminder view
+- Review upcoming tasks within the next 15 days
+- Persist data locally in the browser
+- Provide best-effort local notifications
+
+Out of scope for MVP:
+
+- Cloud sync
+- Authentication
+- Multi-device sync
+- Collaboration
+- Tags and project systems
+- AI features
+
+## Development Direction
+
+The first implementation milestone is:
+
+1. Create a task
+2. Compute `triggerAt`
+3. Split tasks into `Reminder` and `Inbox`
+4. Persist tasks locally after refresh
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
