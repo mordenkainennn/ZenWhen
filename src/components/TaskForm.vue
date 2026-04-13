@@ -2,6 +2,7 @@
 import { computed, reactive, ref, watch } from "vue";
 import { formatDateTime } from "@/utils/date";
 import { computeTriggerAt } from "@/utils/task";
+import { REMINDER_PRESETS, validateTaskInput } from "@/utils/validation";
 
 const props = withDefaults(
   defineProps<{
@@ -67,22 +68,15 @@ function handleSubmit() {
   const title = form.title.trim();
   const remindBeforeMinutes = Number(form.remindBeforeMinutes);
 
-  if (!title) {
-    errorMessage.value = "Title is required.";
+  errorMessage.value = validateTaskInput({
+    title,
+    dueAt: form.dueAt,
+    remindBeforeMinutes,
+  });
+
+  if (errorMessage.value) {
     return;
   }
-
-  if (!form.dueAt) {
-    errorMessage.value = "Due time is required.";
-    return;
-  }
-
-  if (!Number.isFinite(remindBeforeMinutes) || remindBeforeMinutes < 0) {
-    errorMessage.value = "Remind before must be a non-negative number.";
-    return;
-  }
-
-  errorMessage.value = "";
 
   emit("submit", {
     title,
@@ -114,6 +108,22 @@ function handleSubmit() {
       <span>Remind before (minutes)</span>
       <input v-model="form.remindBeforeMinutes" type="number" min="0" step="5" required />
     </label>
+
+    <div class="preset-group">
+      <span class="preset-label">Quick presets</span>
+      <div class="preset-list">
+        <button
+          v-for="preset in REMINDER_PRESETS"
+          :key="preset.label"
+          class="preset-button"
+          :class="{ 'preset-button-active': Number(form.remindBeforeMinutes) === preset.minutes }"
+          type="button"
+          @click="form.remindBeforeMinutes = preset.minutes"
+        >
+          {{ preset.label }}
+        </button>
+      </div>
+    </div>
 
     <div class="trigger-preview">
       <strong>Trigger preview</strong>

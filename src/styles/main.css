@@ -404,6 +404,35 @@ button {
   background: #fff;
 }
 
+.preset-group {
+  display: grid;
+  gap: 8px;
+}
+
+.preset-label {
+  font-weight: 600;
+}
+
+.preset-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.preset-button {
+  padding: 8px 12px;
+  border: 1px solid rgba(28, 36, 48, 0.12);
+  border-radius: 999px;
+  background: #fff;
+  color: #37516f;
+}
+
+.preset-button-active {
+  border-color: rgba(51, 92, 145, 0.24);
+  background: #eef4f8;
+  color: #1c2430;
+}
+
 .trigger-preview {
   padding: 14px 16px;
   border-radius: 16px;
