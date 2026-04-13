@@ -13,7 +13,7 @@ const actionMessage = ref("");
 const processingTaskId = ref("");
 
 onMounted(() => {
-  if (!taskStore.tasks.length) {
+  if (!taskStore.initialized) {
     void taskStore.loadTasks();
   }
 });

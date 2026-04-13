@@ -20,7 +20,7 @@ const visibleMonth = ref(nowIso());
 const selectedDateKey = ref(todayKey());
 
 onMounted(() => {
-  if (!taskStore.tasks.length) {
+  if (!taskStore.initialized) {
     void taskStore.loadTasks();
   }
 });

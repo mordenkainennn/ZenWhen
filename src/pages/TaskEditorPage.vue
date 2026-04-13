@@ -32,7 +32,7 @@ onMounted(async () => {
   editorLoading.value = true;
 
   try {
-    if (!taskStore.tasks.length) {
+    if (!taskStore.initialized) {
       await taskStore.loadTasks();
     }
 

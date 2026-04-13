@@ -11,6 +11,7 @@ type NotificationPermissionState = NotificationPermission | "unsupported";
 export const useTaskStore = defineStore("tasks", () => {
   const tasks = ref<Task[]>([]);
   const loading = ref(false);
+  const initialized = ref(false);
   const notificationPermission = ref<NotificationPermissionState>("default");
 
   const reminderTasks = computed(() => {
@@ -35,6 +36,7 @@ export const useTaskStore = defineStore("tasks", () => {
 
   async function refreshTasks() {
     tasks.value = await listTasks();
+    initialized.value = true;
   }
 
   async function syncTriggeredNotifications() {
@@ -109,6 +111,7 @@ export const useTaskStore = defineStore("tasks", () => {
   return {
     tasks,
     loading,
+    initialized,
     notificationPermission,
     reminderTasks,
     inboxTasks,
