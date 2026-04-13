@@ -17,6 +17,7 @@ const router = useRouter();
 const taskStore = useTaskStore();
 const existingTask = ref<Task | null>(null);
 const missingTask = ref(false);
+const editorLoading = ref(false);
 
 const initialValues = computed(() => ({
   title: existingTask.value?.title ?? "",
@@ -28,13 +29,19 @@ const initialValues = computed(() => ({
 const isEditMode = computed(() => Boolean(props.id));
 
 onMounted(async () => {
-  if (!taskStore.tasks.length) {
-    await taskStore.loadTasks();
-  }
+  editorLoading.value = true;
 
-  if (props.id) {
-    existingTask.value = await taskStore.findTask(props.id);
-    missingTask.value = !existingTask.value;
+  try {
+    if (!taskStore.tasks.length) {
+      await taskStore.loadTasks();
+    }
+
+    if (props.id) {
+      existingTask.value = await taskStore.findTask(props.id);
+      missingTask.value = !existingTask.value;
+    }
+  } finally {
+    editorLoading.value = false;
   }
 });
 
@@ -89,7 +96,7 @@ async function handleSubmit(values: {
     />
 
     <LoadingState
-      v-if="taskStore.loading"
+      v-if="taskStore.loading || editorLoading"
       title="Loading task editor"
       description="Fetching the latest task details."
     />

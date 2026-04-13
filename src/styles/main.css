@@ -147,6 +147,9 @@ button {
 }
 
 .nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   padding: 10px 16px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.72);
@@ -154,10 +157,29 @@ button {
   color: #536170;
 }
 
+.nav-link-secondary {
+  opacity: 0.72;
+}
+
 .nav-link.active {
   background: #fff7df;
   color: #523b14;
   border-color: rgba(141, 106, 49, 0.24);
+}
+
+.nav-link.active.nav-link-secondary {
+  opacity: 1;
+}
+
+.nav-count {
+  min-width: 24px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(28, 36, 48, 0.08);
+  color: inherit;
+  text-align: center;
+  font-size: 0.82rem;
+  font-weight: 700;
 }
 
 .content-panel {

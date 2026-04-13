@@ -3,6 +3,7 @@ import { onMounted, onUnmounted, ref } from "vue";
 import { RouterLink, RouterView, useRoute } from "vue-router";
 import { requestNotificationPermission } from "@/services/notification-service";
 import { useTaskStore } from "@/stores/task";
+import { todayKey } from "@/utils/date";
 
 const route = useRoute();
 const taskStore = useTaskStore();
@@ -10,11 +11,33 @@ const installPromptEvent = ref<BeforeInstallPromptEvent | null>(null);
 const installState = ref<"available" | "installed" | "unsupported">("unsupported");
 
 const navItems = [
-  { to: "/", label: "Reminder" },
-  { to: "/inbox", label: "Inbox" },
-  { to: "/review", label: "Review" },
-  { to: "/calendar", label: "Calendar" },
+  { to: "/", label: "Reminder", variant: "primary" as const },
+  { to: "/inbox", label: "Inbox", variant: "secondary" as const },
+  { to: "/review", label: "Review", variant: "primary" as const },
+  { to: "/calendar", label: "Calendar", variant: "primary" as const },
 ];
+
+function getNavCount(path: string) {
+  if (path === "/") {
+    return taskStore.reminderTasks.length;
+  }
+
+  if (path === "/inbox") {
+    return taskStore.inboxTasks.length;
+  }
+
+  if (path === "/review") {
+    return taskStore.reviewTasks.length;
+  }
+
+  if (path === "/calendar") {
+    return taskStore.tasks.filter(
+      (task) => !task.completed && !task.archived && task.dueAt.startsWith(todayKey()),
+    ).length;
+  }
+
+  return 0;
+}
 
 async function enableNotifications() {
   const permission = await requestNotificationPermission();
@@ -54,6 +77,14 @@ async function installApp() {
 }
 
 onMounted(() => {
+  const isStandalone =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.matchMedia("(display-mode: minimal-ui)").matches;
+
+  if (isStandalone) {
+    installState.value = "installed";
+  }
+
   window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
   window.addEventListener("appinstalled", handleAppInstalled);
 });
@@ -110,9 +141,13 @@ onUnmounted(() => {
         :key="item.to"
         :to="item.to"
         class="nav-link"
-        :class="{ active: route.path === item.to }"
+        :class="{
+          active: route.path === item.to,
+          'nav-link-secondary': item.variant === 'secondary',
+        }"
       >
-        {{ item.label }}
+        <span>{{ item.label }}</span>
+        <span class="nav-count">{{ getNavCount(item.to) }}</span>
       </RouterLink>
     </nav>
 
