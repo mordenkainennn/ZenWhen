@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
+import LoadingState from "@/components/LoadingState.vue";
 import PageHeader from "@/components/PageHeader.vue";
 import TaskCard from "@/components/TaskCard.vue";
 import { useTaskStore } from "@/stores/task";
@@ -81,7 +82,13 @@ const reminderSections = computed(() => {
     />
     <div v-if="actionMessage" class="page-notice">{{ actionMessage }}</div>
 
-    <div v-if="reminderSections.length" class="review-groups">
+    <LoadingState
+      v-if="taskStore.loading"
+      title="Loading reminder queue"
+      description="Sorting triggered tasks by urgency."
+    />
+
+    <div v-else-if="reminderSections.length" class="review-groups">
       <section v-for="section in reminderSections" :key="section.key" class="review-group">
         <header class="review-group-header">
           <div>

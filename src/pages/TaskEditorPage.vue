@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import LoadingState from "@/components/LoadingState.vue";
 import PageHeader from "@/components/PageHeader.vue";
 import TaskForm from "@/components/TaskForm.vue";
 import { useTaskStore } from "@/stores/task";
@@ -15,6 +16,7 @@ const props = defineProps<{
 const router = useRouter();
 const taskStore = useTaskStore();
 const existingTask = ref<Task | null>(null);
+const missingTask = ref(false);
 
 const initialValues = computed(() => ({
   title: existingTask.value?.title ?? "",
@@ -32,6 +34,7 @@ onMounted(async () => {
 
   if (props.id) {
     existingTask.value = await taskStore.findTask(props.id);
+    missingTask.value = !existingTask.value;
   }
 });
 
@@ -85,7 +88,19 @@ async function handleSubmit(values: {
       "
     />
 
+    <LoadingState
+      v-if="taskStore.loading"
+      title="Loading task editor"
+      description="Fetching the latest task details."
+    />
+
+    <div v-else-if="missingTask" class="empty-state">
+      <h3>Task not found</h3>
+      <p>The task you tried to edit is no longer available in local storage.</p>
+    </div>
+
     <TaskForm
+      v-else
       :initial-values="initialValues"
       :submit-label="isEditMode ? 'Save Changes' : 'Create Task'"
       @submit="handleSubmit"

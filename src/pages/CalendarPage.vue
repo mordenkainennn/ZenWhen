@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
+import LoadingState from "@/components/LoadingState.vue";
 import PageHeader from "@/components/PageHeader.vue";
 import { useTaskStore } from "@/stores/task";
 import {
@@ -68,7 +69,13 @@ function selectDay(dateKey: string) {
       description="A simplified time-distribution view for spotting busy days."
     />
 
-    <section class="calendar-shell">
+    <LoadingState
+      v-if="taskStore.loading"
+      title="Loading calendar"
+      description="Building your month view and daily task counts."
+    />
+
+    <section v-else class="calendar-shell">
       <div class="calendar-toolbar">
         <button class="secondary-button" type="button" @click="showPreviousMonth">Previous</button>
         <h3>{{ formatMonthLabel(visibleMonth) }}</h3>
@@ -106,7 +113,7 @@ function selectDay(dateKey: string) {
       </div>
     </section>
 
-    <section class="day-panel">
+    <section v-if="!taskStore.loading" class="day-panel">
       <header class="day-panel-header">
         <div>
           <p class="page-kicker">Selected Day</p>

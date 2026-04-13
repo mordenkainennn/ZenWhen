@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
+import LoadingState from "@/components/LoadingState.vue";
 import PageHeader from "@/components/PageHeader.vue";
 import TaskCard from "@/components/TaskCard.vue";
 import { useTaskStore } from "@/stores/task";
@@ -63,7 +64,13 @@ const inboxGroups = computed(() => {
     />
     <div v-if="actionMessage" class="page-notice">{{ actionMessage }}</div>
 
-    <div v-if="inboxGroups.length" class="review-groups">
+    <LoadingState
+      v-if="taskStore.loading"
+      title="Loading hidden tasks"
+      description="Collecting future tasks that have not surfaced yet."
+    />
+
+    <div v-else-if="inboxGroups.length" class="review-groups">
       <section v-for="group in inboxGroups" :key="group.dateKey" class="review-group">
         <header class="review-group-header">
           <div>

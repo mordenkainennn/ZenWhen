@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
+import LoadingState from "@/components/LoadingState.vue";
 import PageHeader from "@/components/PageHeader.vue";
 import TaskCard from "@/components/TaskCard.vue";
 import { useTaskStore } from "@/stores/task";
@@ -63,7 +64,13 @@ const reviewGroups = computed(() => {
     />
     <div v-if="actionMessage" class="page-notice">{{ actionMessage }}</div>
 
-    <div v-if="reviewGroups.length" class="review-groups">
+    <LoadingState
+      v-if="taskStore.loading"
+      title="Loading review window"
+      description="Gathering the next 15 days of upcoming work."
+    />
+
+    <div v-else-if="reviewGroups.length" class="review-groups">
       <section v-for="group in reviewGroups" :key="group.dateKey" class="review-group">
         <header class="review-group-header">
           <div>
