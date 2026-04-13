@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import type { Task } from "@/types/task";
 import { formatDateTime, nowIso } from "@/utils/date";
-import { isOverdueTask } from "@/utils/task";
+import { getReminderStatus } from "@/utils/task";
 
 const props = defineProps<{
   task: Task;
@@ -13,13 +13,7 @@ const emit = defineEmits<{
   remove: [taskId: string];
 }>();
 
-const statusLabel = computed(() => {
-  if (isOverdueTask(props.task, nowIso())) {
-    return "Overdue";
-  }
-
-  return "Scheduled";
-});
+const status = computed(() => getReminderStatus(props.task, nowIso()));
 
 function handleComplete() {
   emit("complete", props.task.id);
@@ -33,7 +27,7 @@ function handleRemove() {
 <template>
   <article class="task-card">
     <div class="task-card-top">
-      <span class="task-status">{{ statusLabel }}</span>
+      <span class="task-status" :class="`task-status-${status.tone}`">{{ status.label }}</span>
       <RouterLink class="task-edit-link" :to="`/tasks/${task.id}/edit`">Edit</RouterLink>
     </div>
 

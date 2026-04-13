@@ -21,6 +21,27 @@ export function isOverdueTask(task: Task, now: string) {
   return task.dueAt < now && !task.completed && !task.archived;
 }
 
+export function getReminderStatus(task: Task, now: string) {
+  if (isOverdueTask(task, now)) {
+    return {
+      label: "Overdue",
+      tone: "overdue" as const,
+    };
+  }
+
+  if (dayjs(task.dueAt).isSame(dayjs(now), "day")) {
+    return {
+      label: "Today",
+      tone: "today" as const,
+    };
+  }
+
+  return {
+    label: "Upcoming",
+    tone: "upcoming" as const,
+  };
+}
+
 export function sortReminderTasks(tasks: Task[], now: string) {
   return [...tasks].sort((left, right) => {
     const leftOverdue = isOverdueTask(left, now) ? 0 : 1;
