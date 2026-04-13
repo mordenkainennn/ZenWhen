@@ -93,6 +93,18 @@ button {
   margin: 14px 0 0;
 }
 
+.hero-meta {
+  margin: 14px 0 0;
+  color: #536170;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
 .new-task-link,
 .primary-button,
 .secondary-button,

@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { RouterLink, RouterView, useRoute } from "vue-router";
+import { requestNotificationPermission, scanAndNotifyTasks } from "@/services/notification-service";
+import { useTaskStore } from "@/stores/task";
 
 const route = useRoute();
+const taskStore = useTaskStore();
 
 const navItems = [
   { to: "/", label: "Reminder" },
@@ -9,6 +12,16 @@ const navItems = [
   { to: "/review", label: "Review" },
   { to: "/calendar", label: "Calendar" },
 ];
+
+async function enableNotifications() {
+  const permission = await requestNotificationPermission();
+  taskStore.setNotificationPermission(permission);
+
+  if (permission === "granted") {
+    await scanAndNotifyTasks(taskStore.tasks);
+    await taskStore.loadTasks();
+  }
+}
 </script>
 
 <template>
@@ -20,9 +33,23 @@ const navItems = [
         <p class="hero-copy">
           A low-interruption reminder system that keeps future work hidden until the right moment.
         </p>
+        <p class="hero-meta">
+          Notifications:
+          <strong>{{ taskStore.notificationPermission }}</strong>
+        </p>
       </div>
 
-      <RouterLink class="new-task-link" to="/tasks/new">New Task</RouterLink>
+      <div class="hero-actions">
+        <button
+          v-if="taskStore.notificationPermission !== 'granted'"
+          class="secondary-button"
+          type="button"
+          @click="enableNotifications"
+        >
+          Enable Notifications
+        </button>
+        <RouterLink class="new-task-link" to="/tasks/new">New Task</RouterLink>
+      </div>
     </header>
 
     <nav class="main-nav" aria-label="Primary">
