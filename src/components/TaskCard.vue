@@ -2,10 +2,11 @@
 import { computed } from "vue";
 import type { Task } from "@/types/task";
 import { formatDateTime, nowIso } from "@/utils/date";
-import { getReminderStatus } from "@/utils/task";
+import { getInboxStatus, getReminderStatus } from "@/utils/task";
 
 const props = defineProps<{
   task: Task;
+  statusContext?: "reminder" | "inbox";
 }>();
 
 const emit = defineEmits<{
@@ -13,7 +14,15 @@ const emit = defineEmits<{
   remove: [taskId: string];
 }>();
 
-const status = computed(() => getReminderStatus(props.task, nowIso()));
+const status = computed(() => {
+  const now = nowIso();
+
+  if (props.statusContext === "inbox") {
+    return getInboxStatus(props.task, now);
+  }
+
+  return getReminderStatus(props.task, now);
+});
 
 function handleComplete() {
   emit("complete", props.task.id);

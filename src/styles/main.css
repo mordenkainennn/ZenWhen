@@ -350,6 +350,11 @@ button {
   color: #25614a;
 }
 
+.task-status-hidden {
+  background: #eef4f8;
+  color: #37516f;
+}
+
 .task-edit-link {
   color: #335c91;
 }

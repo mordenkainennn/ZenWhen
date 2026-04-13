@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import PageHeader from "@/components/PageHeader.vue";
-import TaskList from "@/components/TaskList.vue";
+import TaskCard from "@/components/TaskCard.vue";
 import { useTaskStore } from "@/stores/task";
+import type { Task } from "@/types/task";
+import { formatLongDate, toDateKey } from "@/utils/date";
 
 const taskStore = useTaskStore();
 const actionMessage = ref("");
@@ -22,6 +24,35 @@ async function handleRemove(taskId: string) {
   await taskStore.removeTask(taskId);
   actionMessage.value = "Future task deleted.";
 }
+
+const inboxGroups = computed(() => {
+  const groups = new Map<
+    string,
+    {
+      dateKey: string;
+      label: string;
+      tasks: Task[];
+    }
+  >();
+
+  for (const task of taskStore.inboxTasks) {
+    const dateKey = toDateKey(task.triggerAt);
+    const existing = groups.get(dateKey);
+
+    if (existing) {
+      existing.tasks.push(task);
+      continue;
+    }
+
+    groups.set(dateKey, {
+      dateKey,
+      label: formatLongDate(dateKey),
+      tasks: [task],
+    });
+  }
+
+  return [...groups.values()];
+});
 </script>
 
 <template>
@@ -31,12 +62,37 @@ async function handleRemove(taskId: string) {
       description="Future tasks live here until their trigger time surfaces them."
     />
     <div v-if="actionMessage" class="page-notice">{{ actionMessage }}</div>
-    <TaskList
-      :tasks="taskStore.inboxTasks"
-      empty-title="Inbox is clear"
-      empty-description="You have no hidden future tasks at the moment."
-      @complete="handleComplete"
-      @remove="handleRemove"
-    />
+
+    <div v-if="inboxGroups.length" class="review-groups">
+      <section v-for="group in inboxGroups" :key="group.dateKey" class="review-group">
+        <header class="review-group-header">
+          <div>
+            <p class="page-kicker">Trigger Date</p>
+            <h3>{{ group.label }}</h3>
+          </div>
+          <p class="review-group-count">
+            {{ group.tasks.length }} task<span v-if="group.tasks.length !== 1">s</span>
+          </p>
+        </header>
+
+        <p class="section-description">These tasks stay hidden until this date reaches their trigger time.</p>
+
+        <div class="task-list">
+          <TaskCard
+            v-for="task in group.tasks"
+            :key="task.id"
+            :task="task"
+            status-context="inbox"
+            @complete="handleComplete"
+            @remove="handleRemove"
+          />
+        </div>
+      </section>
+    </div>
+
+    <div v-else class="empty-state">
+      <h3>Inbox is clear</h3>
+      <p>You have no hidden future tasks at the moment.</p>
+    </div>
   </section>
 </template>

@@ -42,6 +42,20 @@ export function getReminderStatus(task: Task, now: string) {
   };
 }
 
+export function getInboxStatus(task: Task, now: string) {
+  if (dayjs(task.triggerAt).isSame(dayjs(now), "day")) {
+    return {
+      label: "Surfaces Today",
+      tone: "today" as const,
+    };
+  }
+
+  return {
+    label: "Hidden",
+    tone: "hidden" as const,
+  };
+}
+
 export function sortReminderTasks(tasks: Task[], now: string) {
   return [...tasks].sort((left, right) => {
     const leftOverdue = isOverdueTask(left, now) ? 0 : 1;
