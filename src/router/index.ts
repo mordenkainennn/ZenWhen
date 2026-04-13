@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import CalendarPage from "@/pages/CalendarPage.vue";
 import InboxPage from "@/pages/InboxPage.vue";
+import NotFoundPage from "@/pages/NotFoundPage.vue";
 import ReminderPage from "@/pages/ReminderPage.vue";
 import ReviewPage from "@/pages/ReviewPage.vue";
 import TaskEditorPage from "@/pages/TaskEditorPage.vue";
@@ -38,6 +39,11 @@ const router = createRouter({
       name: "task-edit",
       component: TaskEditorPage,
       props: true,
+    },
+    {
+      path: "/:pathMatch(.*)*",
+      name: "not-found",
+      component: NotFoundPage,
     },
   ],
 });

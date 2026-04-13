@@ -478,6 +478,12 @@ button {
   font-weight: 600;
 }
 
+.not-found-state {
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+}
+
 @media (max-width: 720px) {
   .app-shell {
     padding: 20px 14px 36px;
