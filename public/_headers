@@ -1,0 +1,14 @@
+/service-worker.js
+  Cache-Control: no-cache
+
+/manifest.json
+  Cache-Control: public, max-age=3600
+
+/icon.svg
+  Cache-Control: public, max-age=31536000, immutable
+
+/icon-maskable.svg
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable

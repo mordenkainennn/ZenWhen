@@ -85,6 +85,24 @@ Type-check the app:
 npm run typecheck
 ```
 
+## Deploying to Cloudflare Pages
+
+ZenWhen is set up as a static Vite app and can be deployed directly to Cloudflare Pages.
+
+Recommended build settings:
+
+- Framework preset: `Vite`
+- Build command: `npm run build`
+- Build output directory: `dist`
+
+Deployment notes:
+
+- The app uses Vue Router history mode, so the repository includes `public/_redirects` for SPA route fallback on Cloudflare Pages.
+- PWA files such as `manifest.json`, `service-worker.js`, and app icons are shipped from `public/`.
+- `public/_headers` adds basic cache behavior for the service worker and static assets.
+
+After connecting the GitHub repository in Cloudflare Pages, each push to your production branch can trigger a new deployment automatically.
+
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE).
