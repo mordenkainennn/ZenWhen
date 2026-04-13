@@ -7,6 +7,7 @@ import { getInboxStatus, getReminderStatus } from "@/utils/task";
 const props = defineProps<{
   task: Task;
   statusContext?: "reminder" | "inbox";
+  busy?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -59,8 +60,12 @@ function handleRemove() {
     </dl>
 
     <div class="task-actions">
-      <button class="secondary-button" type="button" @click="handleComplete">Complete</button>
-      <button class="danger-button" type="button" @click="handleRemove">Delete</button>
+      <button class="secondary-button" type="button" :disabled="busy" @click="handleComplete">
+        {{ busy ? "Working..." : "Complete" }}
+      </button>
+      <button class="danger-button" type="button" :disabled="busy" @click="handleRemove">
+        {{ busy ? "Working..." : "Delete" }}
+      </button>
     </div>
   </article>
 </template>

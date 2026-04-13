@@ -9,6 +9,7 @@ import { formatLongDate, toDateKey } from "@/utils/date";
 
 const taskStore = useTaskStore();
 const actionMessage = ref("");
+const processingTaskId = ref("");
 
 onMounted(() => {
   if (!taskStore.tasks.length) {
@@ -17,13 +18,29 @@ onMounted(() => {
 });
 
 async function handleComplete(taskId: string) {
-  await taskStore.completeTask(taskId);
-  actionMessage.value = "Task completed from the review window.";
+  processingTaskId.value = taskId;
+
+  try {
+    await taskStore.completeTask(taskId);
+    actionMessage.value = "Task completed from the review window.";
+  } finally {
+    processingTaskId.value = "";
+  }
 }
 
 async function handleRemove(taskId: string) {
-  await taskStore.removeTask(taskId);
-  actionMessage.value = "Task removed from the review window.";
+  if (!window.confirm("Delete this task from the review window?")) {
+    return;
+  }
+
+  processingTaskId.value = taskId;
+
+  try {
+    await taskStore.removeTask(taskId);
+    actionMessage.value = "Task removed from the review window.";
+  } finally {
+    processingTaskId.value = "";
+  }
 }
 
 const reviewGroups = computed(() => {
@@ -87,6 +104,7 @@ const reviewGroups = computed(() => {
             v-for="task in group.tasks"
             :key="task.id"
             :task="task"
+            :busy="processingTaskId === task.id"
             @complete="handleComplete"
             @remove="handleRemove"
           />

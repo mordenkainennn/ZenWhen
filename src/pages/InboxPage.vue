@@ -9,6 +9,7 @@ import { formatLongDate, toDateKey } from "@/utils/date";
 
 const taskStore = useTaskStore();
 const actionMessage = ref("");
+const processingTaskId = ref("");
 
 onMounted(() => {
   if (!taskStore.tasks.length) {
@@ -17,13 +18,29 @@ onMounted(() => {
 });
 
 async function handleComplete(taskId: string) {
-  await taskStore.completeTask(taskId);
-  actionMessage.value = "Task marked complete before it needed to surface.";
+  processingTaskId.value = taskId;
+
+  try {
+    await taskStore.completeTask(taskId);
+    actionMessage.value = "Task marked complete before it needed to surface.";
+  } finally {
+    processingTaskId.value = "";
+  }
 }
 
 async function handleRemove(taskId: string) {
-  await taskStore.removeTask(taskId);
-  actionMessage.value = "Future task deleted.";
+  if (!window.confirm("Delete this hidden future task?")) {
+    return;
+  }
+
+  processingTaskId.value = taskId;
+
+  try {
+    await taskStore.removeTask(taskId);
+    actionMessage.value = "Future task deleted.";
+  } finally {
+    processingTaskId.value = "";
+  }
 }
 
 const inboxGroups = computed(() => {
@@ -89,6 +106,7 @@ const inboxGroups = computed(() => {
             v-for="task in group.tasks"
             :key="task.id"
             :task="task"
+            :busy="processingTaskId === task.id"
             status-context="inbox"
             @complete="handleComplete"
             @remove="handleRemove"

@@ -10,6 +10,7 @@ import { nowIso } from "@/utils/date";
 
 const taskStore = useTaskStore();
 const actionMessage = ref("");
+const processingTaskId = ref("");
 
 onMounted(() => {
   if (!taskStore.tasks.length) {
@@ -18,13 +19,29 @@ onMounted(() => {
 });
 
 async function handleComplete(taskId: string) {
-  await taskStore.completeTask(taskId);
-  actionMessage.value = "Task completed and removed from your active reminder queue.";
+  processingTaskId.value = taskId;
+
+  try {
+    await taskStore.completeTask(taskId);
+    actionMessage.value = "Task completed and removed from your active reminder queue.";
+  } finally {
+    processingTaskId.value = "";
+  }
 }
 
 async function handleRemove(taskId: string) {
-  await taskStore.removeTask(taskId);
-  actionMessage.value = "Task deleted from local storage.";
+  if (!window.confirm("Delete this task from local storage?")) {
+    return;
+  }
+
+  processingTaskId.value = taskId;
+
+  try {
+    await taskStore.removeTask(taskId);
+    actionMessage.value = "Task deleted from local storage.";
+  } finally {
+    processingTaskId.value = "";
+  }
 }
 
 const reminderSections = computed(() => {
@@ -107,6 +124,7 @@ const reminderSections = computed(() => {
             v-for="task in section.tasks"
             :key="task.id"
             :task="task"
+            :busy="processingTaskId === task.id"
             @complete="handleComplete"
             @remove="handleRemove"
           />
