@@ -8,6 +8,11 @@ const props = defineProps<{
   task: Task;
 }>();
 
+const emit = defineEmits<{
+  complete: [taskId: string];
+  remove: [taskId: string];
+}>();
+
 const statusLabel = computed(() => {
   if (isOverdueTask(props.task, nowIso())) {
     return "Overdue";
@@ -15,6 +20,14 @@ const statusLabel = computed(() => {
 
   return "Scheduled";
 });
+
+function handleComplete() {
+  emit("complete", props.task.id);
+}
+
+function handleRemove() {
+  emit("remove", props.task.id);
+}
 </script>
 
 <template>
@@ -41,5 +54,10 @@ const statusLabel = computed(() => {
         <dd>{{ task.remindBeforeMinutes }} minutes</dd>
       </div>
     </dl>
+
+    <div class="task-actions">
+      <button class="secondary-button" type="button" @click="handleComplete">Complete</button>
+      <button class="danger-button" type="button" @click="handleRemove">Delete</button>
+    </div>
   </article>
 </template>

@@ -11,6 +11,14 @@ onMounted(() => {
     void taskStore.loadTasks();
   }
 });
+
+async function handleComplete(taskId: string) {
+  await taskStore.completeTask(taskId);
+}
+
+async function handleRemove(taskId: string) {
+  await taskStore.removeTask(taskId);
+}
 </script>
 
 <template>
@@ -23,6 +31,8 @@ onMounted(() => {
       :tasks="taskStore.reminderTasks"
       empty-title="Nothing needs your attention right now"
       empty-description="Future tasks stay hidden until their trigger time arrives."
+      @complete="handleComplete"
+      @remove="handleRemove"
     />
   </section>
 </template>

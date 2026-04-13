@@ -52,6 +52,22 @@ export const useTaskStore = defineStore("tasks", () => {
     tasks.value = await listTasks();
   }
 
+  async function completeTask(id: string) {
+    const target = tasks.value.find((task) => task.id === id);
+
+    if (!target) {
+      return;
+    }
+
+    await updateTask({
+      ...target,
+      completed: true,
+      updatedAt: nowIso(),
+    });
+
+    tasks.value = await listTasks();
+  }
+
   async function removeTask(id: string) {
     await deleteTask(id);
     tasks.value = await listTasks();
@@ -75,6 +91,7 @@ export const useTaskStore = defineStore("tasks", () => {
     loadTasks,
     createNewTask,
     saveTask,
+    completeTask,
     removeTask,
     findTask,
     setNotificationPermission,

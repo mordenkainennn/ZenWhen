@@ -11,6 +11,14 @@ onMounted(() => {
     void taskStore.loadTasks();
   }
 });
+
+async function handleComplete(taskId: string) {
+  await taskStore.completeTask(taskId);
+}
+
+async function handleRemove(taskId: string) {
+  await taskStore.removeTask(taskId);
+}
 </script>
 
 <template>
@@ -23,6 +31,8 @@ onMounted(() => {
       :tasks="taskStore.reviewTasks"
       empty-title="No upcoming tasks in the review window"
       empty-description="Review helps catch future commitments before they surprise you."
+      @complete="handleComplete"
+      @remove="handleRemove"
     />
   </section>
 </template>

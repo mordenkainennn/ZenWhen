@@ -94,16 +94,32 @@ button {
 }
 
 .new-task-link,
-.primary-button {
+.primary-button,
+.secondary-button,
+.danger-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border: none;
   border-radius: 999px;
   padding: 14px 20px;
+  font-weight: 600;
+}
+
+.new-task-link,
+.primary-button {
   background: #1c2430;
   color: #f8fafc;
-  font-weight: 600;
+}
+
+.secondary-button {
+  background: #eef4f8;
+  color: #1c2430;
+}
+
+.danger-button {
+  background: #fbe7e2;
+  color: #9c3f25;
 }
 
 .main-nav {
@@ -209,6 +225,13 @@ button {
   gap: 16px;
 }
 
+.task-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
 .task-form label {
   display: grid;
   gap: 8px;
@@ -234,6 +257,12 @@ button {
 .empty-state h3,
 .empty-state p {
   margin: 0;
+}
+
+.form-error {
+  margin: -4px 0 0;
+  color: #9c3f25;
+  font-weight: 600;
 }
 
 @media (max-width: 720px) {

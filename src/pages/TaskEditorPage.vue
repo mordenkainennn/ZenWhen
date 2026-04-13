@@ -5,7 +5,7 @@ import PageHeader from "@/components/PageHeader.vue";
 import TaskForm from "@/components/TaskForm.vue";
 import { useTaskStore } from "@/stores/task";
 import type { Task } from "@/types/task";
-import { nowIso } from "@/utils/date";
+import { formatLocalInputDateTime, nowIso } from "@/utils/date";
 import { computeTriggerAt } from "@/utils/task";
 
 const props = defineProps<{
@@ -19,13 +19,17 @@ const existingTask = ref<Task | null>(null);
 const initialValues = computed(() => ({
   title: existingTask.value?.title ?? "",
   notes: existingTask.value?.notes ?? "",
-  dueAt: existingTask.value ? existingTask.value.dueAt.slice(0, 16) : "",
+  dueAt: existingTask.value ? formatLocalInputDateTime(existingTask.value.dueAt) : "",
   remindBeforeMinutes: existingTask.value?.remindBeforeMinutes ?? 60,
 }));
 
 const isEditMode = computed(() => Boolean(props.id));
 
 onMounted(async () => {
+  if (!taskStore.tasks.length) {
+    await taskStore.loadTasks();
+  }
+
   if (props.id) {
     existingTask.value = await taskStore.findTask(props.id);
   }

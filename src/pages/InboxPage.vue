@@ -11,6 +11,14 @@ onMounted(() => {
     void taskStore.loadTasks();
   }
 });
+
+async function handleComplete(taskId: string) {
+  await taskStore.completeTask(taskId);
+}
+
+async function handleRemove(taskId: string) {
+  await taskStore.removeTask(taskId);
+}
 </script>
 
 <template>
@@ -23,6 +31,8 @@ onMounted(() => {
       :tasks="taskStore.inboxTasks"
       empty-title="Inbox is clear"
       empty-description="You have no hidden future tasks at the moment."
+      @complete="handleComplete"
+      @remove="handleRemove"
     />
   </section>
 </template>

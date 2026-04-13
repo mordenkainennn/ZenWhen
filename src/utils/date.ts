@@ -8,6 +8,10 @@ export function formatDateTime(value: string) {
   return dayjs(value).format("YYYY-MM-DD HH:mm");
 }
 
+export function formatLocalInputDateTime(value: string) {
+  return dayjs(value).format("YYYY-MM-DDTHH:mm");
+}
+
 export function addDays(value: string, days: number) {
   return dayjs(value).add(days, "day").toISOString();
 }

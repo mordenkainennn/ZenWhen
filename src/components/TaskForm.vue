@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
+import { formatDateTime } from "@/utils/date";
 import { computeTriggerAt } from "@/utils/task";
 
 const props = withDefaults(
@@ -41,6 +42,8 @@ const form = reactive({
   remindBeforeMinutes: props.initialValues.remindBeforeMinutes,
 });
 
+const errorMessage = ref("");
+
 watch(
   () => props.initialValues,
   (value) => {
@@ -57,15 +60,35 @@ const triggerPreview = computed(() => {
     return "Select a due time to preview triggerAt";
   }
 
-  return computeTriggerAt(form.dueAt, form.remindBeforeMinutes);
+  return formatDateTime(computeTriggerAt(form.dueAt, Number(form.remindBeforeMinutes)));
 });
 
 function handleSubmit() {
+  const title = form.title.trim();
+  const remindBeforeMinutes = Number(form.remindBeforeMinutes);
+
+  if (!title) {
+    errorMessage.value = "Title is required.";
+    return;
+  }
+
+  if (!form.dueAt) {
+    errorMessage.value = "Due time is required.";
+    return;
+  }
+
+  if (!Number.isFinite(remindBeforeMinutes) || remindBeforeMinutes < 0) {
+    errorMessage.value = "Remind before must be a non-negative number.";
+    return;
+  }
+
+  errorMessage.value = "";
+
   emit("submit", {
-    title: form.title.trim(),
+    title,
     notes: form.notes.trim(),
     dueAt: form.dueAt,
-    remindBeforeMinutes: Number(form.remindBeforeMinutes),
+    remindBeforeMinutes,
   });
 }
 </script>
@@ -96,6 +119,8 @@ function handleSubmit() {
       <strong>Trigger preview</strong>
       <p>{{ triggerPreview }}</p>
     </div>
+
+    <p v-if="errorMessage" class="form-error">{{ errorMessage }}</p>
 
     <button class="primary-button" type="submit">{{ submitLabel }}</button>
   </form>
