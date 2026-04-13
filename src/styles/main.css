@@ -98,6 +98,11 @@ button {
   color: #536170;
 }
 
+.hero-meta strong {
+  color: #1c2430;
+  text-transform: capitalize;
+}
+
 .hero-actions {
   display: flex;
   flex-wrap: wrap;

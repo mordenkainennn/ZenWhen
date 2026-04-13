@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref } from "vue";
 import { RouterLink, RouterView, useRoute } from "vue-router";
 import { requestNotificationPermission } from "@/services/notification-service";
 import { useTaskStore } from "@/stores/task";
 
 const route = useRoute();
 const taskStore = useTaskStore();
+const installPromptEvent = ref<BeforeInstallPromptEvent | null>(null);
+const installState = ref<"available" | "installed" | "unsupported">("unsupported");
 
 const navItems = [
   { to: "/", label: "Reminder" },
@@ -21,6 +24,44 @@ async function enableNotifications() {
     await taskStore.syncTriggeredNotifications();
   }
 }
+
+function handleBeforeInstallPrompt(event: Event) {
+  event.preventDefault();
+  installPromptEvent.value = event as BeforeInstallPromptEvent;
+  installState.value = "available";
+}
+
+function handleAppInstalled() {
+  installPromptEvent.value = null;
+  installState.value = "installed";
+}
+
+async function installApp() {
+  if (!installPromptEvent.value) {
+    return;
+  }
+
+  await installPromptEvent.value.prompt();
+  const choice = await installPromptEvent.value.userChoice;
+
+  if (choice.outcome === "accepted") {
+    installState.value = "installed";
+    installPromptEvent.value = null;
+    return;
+  }
+
+  installState.value = "available";
+}
+
+onMounted(() => {
+  window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+  window.addEventListener("appinstalled", handleAppInstalled);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+  window.removeEventListener("appinstalled", handleAppInstalled);
+});
 </script>
 
 <template>
@@ -36,6 +77,10 @@ async function enableNotifications() {
           Notifications:
           <strong>{{ taskStore.notificationPermission }}</strong>
         </p>
+        <p class="hero-meta">
+          Install:
+          <strong>{{ installState }}</strong>
+        </p>
       </div>
 
       <div class="hero-actions">
@@ -46,6 +91,14 @@ async function enableNotifications() {
           @click="enableNotifications"
         >
           Enable Notifications
+        </button>
+        <button
+          v-if="installState === 'available'"
+          class="secondary-button"
+          type="button"
+          @click="installApp"
+        >
+          Install App
         </button>
         <RouterLink class="new-task-link" to="/tasks/new">New Task</RouterLink>
       </div>
