@@ -18,6 +18,7 @@ const taskStore = useTaskStore();
 const existingTask = ref<Task | null>(null);
 const missingTask = ref(false);
 const editorLoading = ref(false);
+const submitting = ref(false);
 
 const initialValues = computed(() => ({
   title: existingTask.value?.title ?? "",
@@ -51,36 +52,45 @@ async function handleSubmit(values: {
   dueAt: string;
   remindBeforeMinutes: number;
 }) {
+  if (submitting.value) {
+    return;
+  }
+
+  submitting.value = true;
   const timestamp = nowIso();
   const dueAt = new Date(values.dueAt).toISOString();
 
-  if (isEditMode.value && existingTask.value) {
-    await taskStore.saveTask({
-      ...existingTask.value,
-      title: values.title,
-      notes: values.notes,
-      dueAt,
-      remindBeforeMinutes: values.remindBeforeMinutes,
-      triggerAt: computeTriggerAt(dueAt, values.remindBeforeMinutes),
-      updatedAt: timestamp,
-    });
-  } else {
-    await taskStore.createNewTask({
-      id: crypto.randomUUID(),
-      title: values.title,
-      notes: values.notes,
-      dueAt,
-      remindBeforeMinutes: values.remindBeforeMinutes,
-      triggerAt: computeTriggerAt(dueAt, values.remindBeforeMinutes),
-      completed: false,
-      archived: false,
-      notifiedAt: null,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-    });
-  }
+  try {
+    if (isEditMode.value && existingTask.value) {
+      await taskStore.saveTask({
+        ...existingTask.value,
+        title: values.title,
+        notes: values.notes,
+        dueAt,
+        remindBeforeMinutes: values.remindBeforeMinutes,
+        triggerAt: computeTriggerAt(dueAt, values.remindBeforeMinutes),
+        updatedAt: timestamp,
+      });
+    } else {
+      await taskStore.createNewTask({
+        id: crypto.randomUUID(),
+        title: values.title,
+        notes: values.notes,
+        dueAt,
+        remindBeforeMinutes: values.remindBeforeMinutes,
+        triggerAt: computeTriggerAt(dueAt, values.remindBeforeMinutes),
+        completed: false,
+        archived: false,
+        notifiedAt: null,
+        createdAt: timestamp,
+        updatedAt: timestamp,
+      });
+    }
 
-  await router.push("/");
+    await router.push("/");
+  } finally {
+    submitting.value = false;
+  }
 }
 </script>
 
@@ -110,6 +120,7 @@ async function handleSubmit(values: {
       v-else
       :initial-values="initialValues"
       :submit-label="isEditMode ? 'Save Changes' : 'Create Task'"
+      :submitting="submitting"
       @submit="handleSubmit"
     />
   </section>

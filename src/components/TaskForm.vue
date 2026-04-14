@@ -13,6 +13,7 @@ const props = withDefaults(
       remindBeforeMinutes: number;
     };
     submitLabel?: string;
+    submitting?: boolean;
   }>(),
   {
     initialValues: () => ({
@@ -22,6 +23,7 @@ const props = withDefaults(
       remindBeforeMinutes: 60,
     }),
     submitLabel: "Save Task",
+    submitting: false,
   },
 );
 
@@ -91,22 +93,29 @@ function handleSubmit() {
   <form class="task-form" @submit.prevent="handleSubmit">
     <label>
       <span>Title</span>
-      <input v-model="form.title" type="text" maxlength="120" required />
+      <input v-model="form.title" type="text" maxlength="120" required :disabled="submitting" />
     </label>
 
     <label>
       <span>Notes</span>
-      <textarea v-model="form.notes" rows="4" />
+      <textarea v-model="form.notes" rows="4" :disabled="submitting" />
     </label>
 
     <label>
       <span>Due time</span>
-      <input v-model="form.dueAt" type="datetime-local" required />
+      <input v-model="form.dueAt" type="datetime-local" required :disabled="submitting" />
     </label>
 
     <label>
       <span>Remind before (minutes)</span>
-      <input v-model="form.remindBeforeMinutes" type="number" min="0" step="5" required />
+      <input
+        v-model="form.remindBeforeMinutes"
+        type="number"
+        min="0"
+        step="5"
+        required
+        :disabled="submitting"
+      />
     </label>
 
     <div class="preset-group">
@@ -118,6 +127,7 @@ function handleSubmit() {
           class="preset-button"
           :class="{ 'preset-button-active': Number(form.remindBeforeMinutes) === preset.minutes }"
           type="button"
+          :disabled="submitting"
           @click="form.remindBeforeMinutes = preset.minutes"
         >
           {{ preset.label }}
@@ -132,6 +142,8 @@ function handleSubmit() {
 
     <p v-if="errorMessage" class="form-error">{{ errorMessage }}</p>
 
-    <button class="primary-button" type="submit">{{ submitLabel }}</button>
+    <button class="primary-button" type="submit" :disabled="submitting">
+      {{ submitting ? "Saving..." : submitLabel }}
+    </button>
   </form>
 </template>
