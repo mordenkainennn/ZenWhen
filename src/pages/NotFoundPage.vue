@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
+import { useI18n } from "@/i18n";
 import PageHeader from "@/components/PageHeader.vue";
+
+const { t } = useI18n();
 </script>
 
 <template>
   <section class="page-stack">
     <PageHeader
-      title="Page Not Found"
-      description="This route does not map to a ZenWhen view."
+      :title="t('notFound.title')"
+      :description="t('notFound.description')"
     />
 
     <div class="empty-state not-found-state">
-      <h3>The page you requested could not be found</h3>
-      <p>
-        The address may be outdated, incomplete, or never existed in this app. You can head back
-        to the reminder queue and continue from there.
-      </p>
-      <RouterLink class="primary-button" to="/">Back to Reminder</RouterLink>
+      <h3>{{ t("notFound.title") }}</h3>
+      <p>{{ t("notFound.body") }}</p>
+      <RouterLink class="primary-button" to="/">{{ t("notFound.back") }}</RouterLink>
     </div>
   </section>
 </template>

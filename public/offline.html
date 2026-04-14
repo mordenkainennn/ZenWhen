@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ZenWhen Offline</title>
+    <title>ZenWhen 离线提示</title>
     <style>
       :root {
         color-scheme: light;
@@ -37,14 +37,31 @@
 
       p {
         color: #536170;
+        margin: 0;
+      }
+
+      .offline-copy {
+        display: grid;
+        gap: 12px;
+      }
+
+      .offline-copy h1 {
+        margin: 0;
+      }
+
+      .offline-copy p + p {
+        margin-top: -4px;
       }
     </style>
   </head>
   <body>
     <main>
-      <p>ZenWhen</p>
-      <h1>You are offline</h1>
-      <p>The app shell should still load after your first visit. If this page appears, reconnect and reopen ZenWhen to refresh its local cache.</p>
+      <div class="offline-copy">
+        <p>ZenWhen</p>
+        <h1>你当前处于离线状态</h1>
+        <p>首次成功访问后，应用外壳通常仍可离线打开。如果你看到了这个页面，请恢复网络后重新打开 ZenWhen，以刷新本地缓存。</p>
+        <p>You are currently offline. After the first successful visit, the app shell should still open offline. If this page appears, reconnect and reopen ZenWhen to refresh the local cache.</p>
+      </div>
     </main>
   </body>
   </html>

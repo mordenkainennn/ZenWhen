@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
+import { useI18n } from "@/i18n";
 import LoadingState from "@/components/LoadingState.vue";
 import PageHeader from "@/components/PageHeader.vue";
 import TaskCard from "@/components/TaskCard.vue";
@@ -11,6 +12,7 @@ import { nowIso } from "@/utils/date";
 const taskStore = useTaskStore();
 const actionMessage = ref("");
 const processingTaskId = ref("");
+const { t } = useI18n();
 
 onMounted(() => {
   if (!taskStore.initialized) {
@@ -23,14 +25,14 @@ async function handleComplete(taskId: string) {
 
   try {
     await taskStore.completeTask(taskId);
-    actionMessage.value = "Task completed and removed from your active reminder queue.";
+    actionMessage.value = t("reminder.completeNotice");
   } finally {
     processingTaskId.value = "";
   }
 }
 
 async function handleRemove(taskId: string) {
-  if (!window.confirm("Delete this task from local storage?")) {
+  if (!window.confirm(t("confirm.deleteTask"))) {
     return;
   }
 
@@ -38,7 +40,7 @@ async function handleRemove(taskId: string) {
 
   try {
     await taskStore.removeTask(taskId);
-    actionMessage.value = "Task deleted from local storage.";
+    actionMessage.value = t("reminder.removeNotice");
   } finally {
     processingTaskId.value = "";
   }
@@ -71,20 +73,20 @@ const reminderSections = computed(() => {
   return [
     {
       key: "overdue",
-      title: "Overdue",
-      description: "Tasks that already passed their due time and need attention first.",
+      title: t("reminder.section.overdue"),
+      description: t("reminder.section.overdueDesc"),
       tasks: sections.overdue,
     },
     {
       key: "today",
-      title: "Today",
-      description: "Tasks due later today that are already within their reminder window.",
+      title: t("reminder.section.today"),
+      description: t("reminder.section.todayDesc"),
       tasks: sections.today,
     },
     {
       key: "upcoming",
-      title: "Upcoming",
-      description: "Triggered tasks that are visible now but still due on a later date.",
+      title: t("reminder.section.upcoming"),
+      description: t("reminder.section.upcomingDesc"),
       tasks: sections.upcoming,
     },
   ].filter((section) => section.tasks.length);
@@ -94,27 +96,25 @@ const reminderSections = computed(() => {
 <template>
   <section class="page-stack">
     <PageHeader
-      title="Reminder"
-      description="Only tasks that should be actionable now belong here, sorted by urgency."
+      :title="t('reminder.title')"
+      :description="t('reminder.description')"
     />
     <div v-if="actionMessage" class="page-notice">{{ actionMessage }}</div>
 
     <LoadingState
       v-if="taskStore.loading"
-      title="Loading reminder queue"
-      description="Sorting triggered tasks by urgency."
+      :title="t('loading.reminderTitle')"
+      :description="t('loading.reminderDescription')"
     />
 
     <div v-else-if="reminderSections.length" class="review-groups">
       <section v-for="section in reminderSections" :key="section.key" class="review-group">
         <header class="review-group-header">
           <div>
-            <p class="page-kicker">Reminder Section</p>
+            <p class="page-kicker">{{ t("page.reminderSection") }}</p>
             <h3>{{ section.title }}</h3>
           </div>
-          <p class="review-group-count">
-            {{ section.tasks.length }} task<span v-if="section.tasks.length !== 1">s</span>
-          </p>
+          <p class="review-group-count">{{ t("task.count", { count: section.tasks.length }) }}</p>
         </header>
 
         <p class="section-description">{{ section.description }}</p>
@@ -133,8 +133,8 @@ const reminderSections = computed(() => {
     </div>
 
     <div v-else class="empty-state">
-      <h3>Nothing needs your attention right now</h3>
-      <p>Future tasks stay hidden until their trigger time arrives.</p>
+      <h3>{{ t("reminder.emptyTitle") }}</h3>
+      <p>{{ t("reminder.emptyDescription") }}</p>
     </div>
   </section>
 </template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
+import { useI18n } from "@/i18n";
 import LoadingState from "@/components/LoadingState.vue";
 import PageHeader from "@/components/PageHeader.vue";
 import TaskCard from "@/components/TaskCard.vue";
@@ -10,6 +11,7 @@ import { formatLongDate, toDateKey } from "@/utils/date";
 const taskStore = useTaskStore();
 const actionMessage = ref("");
 const processingTaskId = ref("");
+const { t } = useI18n();
 
 onMounted(() => {
   if (!taskStore.initialized) {
@@ -22,14 +24,14 @@ async function handleComplete(taskId: string) {
 
   try {
     await taskStore.completeTask(taskId);
-    actionMessage.value = "Task completed from the review window.";
+    actionMessage.value = t("review.completeNotice");
   } finally {
     processingTaskId.value = "";
   }
 }
 
 async function handleRemove(taskId: string) {
-  if (!window.confirm("Delete this task from the review window?")) {
+  if (!window.confirm(t("confirm.deleteReviewTask"))) {
     return;
   }
 
@@ -37,7 +39,7 @@ async function handleRemove(taskId: string) {
 
   try {
     await taskStore.removeTask(taskId);
-    actionMessage.value = "Task removed from the review window.";
+    actionMessage.value = t("review.removeNotice");
   } finally {
     processingTaskId.value = "";
   }
@@ -76,27 +78,25 @@ const reviewGroups = computed(() => {
 <template>
   <section class="page-stack">
     <PageHeader
-      title="Review"
-      description="A safety layer for checking what is coming in the next 15 days."
+      :title="t('review.title')"
+      :description="t('review.description')"
     />
     <div v-if="actionMessage" class="page-notice">{{ actionMessage }}</div>
 
     <LoadingState
       v-if="taskStore.loading"
-      title="Loading review window"
-      description="Gathering the next 15 days of upcoming work."
+      :title="t('loading.reviewTitle')"
+      :description="t('loading.reviewDescription')"
     />
 
     <div v-else-if="reviewGroups.length" class="review-groups">
       <section v-for="group in reviewGroups" :key="group.dateKey" class="review-group">
         <header class="review-group-header">
           <div>
-            <p class="page-kicker">Upcoming Date</p>
+            <p class="page-kicker">{{ t("page.upcomingDate") }}</p>
             <h3>{{ group.label }}</h3>
           </div>
-          <p class="review-group-count">
-            {{ group.tasks.length }} task<span v-if="group.tasks.length !== 1">s</span>
-          </p>
+          <p class="review-group-count">{{ t("task.count", { count: group.tasks.length }) }}</p>
         </header>
 
         <div class="task-list">
@@ -113,8 +113,8 @@ const reviewGroups = computed(() => {
     </div>
 
     <div v-else class="empty-state">
-      <h3>No upcoming tasks in the review window</h3>
-      <p>Review helps catch future commitments before they surprise you.</p>
+      <h3>{{ t("review.emptyTitle") }}</h3>
+      <p>{{ t("review.emptyDescription") }}</p>
     </div>
   </section>
 </template>

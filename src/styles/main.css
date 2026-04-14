@@ -115,6 +115,25 @@ button:disabled {
   align-items: center;
 }
 
+.language-switch {
+  display: inline-flex;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(28, 36, 48, 0.08);
+}
+
+.language-button {
+  min-width: 72px;
+  padding: 10px 14px;
+}
+
+.language-button-active {
+  background: #1c2430;
+  color: #f8fafc;
+}
+
 .new-task-link,
 .primary-button,
 .secondary-button,

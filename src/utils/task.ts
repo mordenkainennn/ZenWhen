@@ -24,20 +24,20 @@ export function isOverdueTask(task: Task, now: string) {
 export function getReminderStatus(task: Task, now: string) {
   if (isOverdueTask(task, now)) {
     return {
-      label: "Overdue",
+      key: "overdue" as const,
       tone: "overdue" as const,
     };
   }
 
   if (dayjs(task.dueAt).isSame(dayjs(now), "day")) {
     return {
-      label: "Today",
+      key: "today" as const,
       tone: "today" as const,
     };
   }
 
   return {
-    label: "Upcoming",
+    key: "upcoming" as const,
     tone: "upcoming" as const,
   };
 }
@@ -45,13 +45,13 @@ export function getReminderStatus(task: Task, now: string) {
 export function getInboxStatus(task: Task, now: string) {
   if (dayjs(task.triggerAt).isSame(dayjs(now), "day")) {
     return {
-      label: "Surfaces Today",
+      key: "surfacesToday" as const,
       tone: "today" as const,
     };
   }
 
   return {
-    label: "Hidden",
+    key: "hidden" as const,
     tone: "hidden" as const,
   };
 }

@@ -55,22 +55,22 @@ describe("task utilities", () => {
       getReminderStatus(
         createTask({ dueAt: "2026-04-19T23:00:00+08:00" }),
         "2026-04-20T09:00:00+08:00",
-      ).label,
-    ).toBe("Overdue");
+      ).key,
+    ).toBe("overdue");
 
     expect(
       getReminderStatus(
         createTask({ dueAt: "2026-04-20T18:00:00+08:00" }),
         "2026-04-20T09:00:00+08:00",
-      ).label,
-    ).toBe("Today");
+      ).key,
+    ).toBe("today");
 
     expect(
       getReminderStatus(
         createTask({ dueAt: "2026-04-21T18:00:00+08:00" }),
         "2026-04-20T09:00:00+08:00",
-      ).label,
-    ).toBe("Upcoming");
+      ).key,
+    ).toBe("upcoming");
   });
 
   it("returns inbox statuses based on trigger date", () => {
@@ -78,15 +78,15 @@ describe("task utilities", () => {
       getInboxStatus(
         createTask({ triggerAt: "2026-04-20T15:00:00+08:00" }),
         "2026-04-20T09:00:00+08:00",
-      ).label,
-    ).toBe("Surfaces Today");
+      ).key,
+    ).toBe("surfacesToday");
 
     expect(
       getInboxStatus(
         createTask({ triggerAt: "2026-04-21T15:00:00+08:00" }),
         "2026-04-20T09:00:00+08:00",
-      ).label,
-    ).toBe("Hidden");
+      ).key,
+    ).toBe("hidden");
   });
 
   it("sorts reminder tasks with overdue items first, then dueAt, then createdAt", () => {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
+import { useI18n } from "@/i18n";
 import LoadingState from "@/components/LoadingState.vue";
 import PageHeader from "@/components/PageHeader.vue";
 import TaskCard from "@/components/TaskCard.vue";
@@ -10,6 +11,7 @@ import { formatLongDate, toDateKey } from "@/utils/date";
 const taskStore = useTaskStore();
 const actionMessage = ref("");
 const processingTaskId = ref("");
+const { t } = useI18n();
 
 onMounted(() => {
   if (!taskStore.initialized) {
@@ -22,14 +24,14 @@ async function handleComplete(taskId: string) {
 
   try {
     await taskStore.completeTask(taskId);
-    actionMessage.value = "Task marked complete before it needed to surface.";
+    actionMessage.value = t("inbox.completeNotice");
   } finally {
     processingTaskId.value = "";
   }
 }
 
 async function handleRemove(taskId: string) {
-  if (!window.confirm("Delete this hidden future task?")) {
+  if (!window.confirm(t("confirm.deleteInboxTask"))) {
     return;
   }
 
@@ -37,7 +39,7 @@ async function handleRemove(taskId: string) {
 
   try {
     await taskStore.removeTask(taskId);
-    actionMessage.value = "Future task deleted.";
+    actionMessage.value = t("inbox.removeNotice");
   } finally {
     processingTaskId.value = "";
   }
@@ -76,30 +78,28 @@ const inboxGroups = computed(() => {
 <template>
   <section class="page-stack">
     <PageHeader
-      title="Inbox"
-      description="Future tasks live here until their trigger time surfaces them."
+      :title="t('inbox.title')"
+      :description="t('inbox.description')"
     />
     <div v-if="actionMessage" class="page-notice">{{ actionMessage }}</div>
 
     <LoadingState
       v-if="taskStore.loading"
-      title="Loading hidden tasks"
-      description="Collecting future tasks that have not surfaced yet."
+      :title="t('loading.inboxTitle')"
+      :description="t('loading.inboxDescription')"
     />
 
     <div v-else-if="inboxGroups.length" class="review-groups">
       <section v-for="group in inboxGroups" :key="group.dateKey" class="review-group">
         <header class="review-group-header">
           <div>
-            <p class="page-kicker">Trigger Date</p>
+            <p class="page-kicker">{{ t("page.triggerDate") }}</p>
             <h3>{{ group.label }}</h3>
           </div>
-          <p class="review-group-count">
-            {{ group.tasks.length }} task<span v-if="group.tasks.length !== 1">s</span>
-          </p>
+          <p class="review-group-count">{{ t("task.count", { count: group.tasks.length }) }}</p>
         </header>
 
-        <p class="section-description">These tasks stay hidden until this date reaches their trigger time.</p>
+        <p class="section-description">{{ t("inbox.sectionDescription") }}</p>
 
         <div class="task-list">
           <TaskCard
@@ -116,8 +116,8 @@ const inboxGroups = computed(() => {
     </div>
 
     <div v-else class="empty-state">
-      <h3>Inbox is clear</h3>
-      <p>You have no hidden future tasks at the moment.</p>
+      <h3>{{ t("inbox.emptyTitle") }}</h3>
+      <p>{{ t("inbox.emptyDescription") }}</p>
     </div>
   </section>
 </template>

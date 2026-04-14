@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue";
 import { RouterLink, RouterView, useRoute } from "vue-router";
+import { useI18n } from "@/i18n";
 import { requestNotificationPermission } from "@/services/notification-service";
 import { useTaskStore } from "@/stores/task";
 import { todayKey } from "@/utils/date";
@@ -9,12 +10,13 @@ const route = useRoute();
 const taskStore = useTaskStore();
 const installPromptEvent = ref<BeforeInstallPromptEvent | null>(null);
 const installState = ref<"available" | "installed" | "unsupported">("unsupported");
+const { locale, setLocale, t } = useI18n();
 
 const navItems = [
-  { to: "/", label: "Reminder", variant: "primary" as const },
-  { to: "/inbox", label: "Inbox", variant: "secondary" as const },
-  { to: "/review", label: "Review", variant: "primary" as const },
-  { to: "/calendar", label: "Calendar", variant: "primary" as const },
+  { to: "/", labelKey: "nav.reminder", variant: "primary" as const },
+  { to: "/inbox", labelKey: "nav.inbox", variant: "secondary" as const },
+  { to: "/review", labelKey: "nav.review", variant: "primary" as const },
+  { to: "/calendar", labelKey: "nav.calendar", variant: "primary" as const },
 ];
 
 function getNavCount(path: string) {
@@ -99,29 +101,45 @@ onUnmounted(() => {
   <div class="app-shell">
     <header class="hero">
       <div>
-        <p class="eyebrow">ZenWhen</p>
-        <h1>Tasks should surface when it is time to act.</h1>
-        <p class="hero-copy">
-          A low-interruption reminder system that keeps future work hidden until the right moment.
+        <p class="eyebrow">{{ t("app.name") }}</p>
+        <h1>{{ t("app.tagline") }}</h1>
+        <p class="hero-copy">{{ t("app.description") }}</p>
+        <p class="hero-meta">
+          {{ t("app.notifications") }}:
+          <strong>{{ t(`notification.${taskStore.notificationPermission}`) }}</strong>
         </p>
         <p class="hero-meta">
-          Notifications:
-          <strong>{{ taskStore.notificationPermission }}</strong>
-        </p>
-        <p class="hero-meta">
-          Install:
-          <strong>{{ installState }}</strong>
+          {{ t("app.install") }}:
+          <strong>{{ t(`install.${installState}`) }}</strong>
         </p>
       </div>
 
       <div class="hero-actions">
+        <div class="language-switch" role="group" :aria-label="t('app.languageSwitch')">
+          <button
+            class="secondary-button language-button"
+            :class="{ 'language-button-active': locale === 'zh-CN' }"
+            type="button"
+            @click="setLocale('zh-CN')"
+          >
+            {{ t("app.lang.zh") }}
+          </button>
+          <button
+            class="secondary-button language-button"
+            :class="{ 'language-button-active': locale === 'en' }"
+            type="button"
+            @click="setLocale('en')"
+          >
+            {{ t("app.lang.en") }}
+          </button>
+        </div>
         <button
           v-if="taskStore.notificationPermission !== 'granted'"
           class="secondary-button"
           type="button"
           @click="enableNotifications"
         >
-          Enable Notifications
+          {{ t("app.enableNotifications") }}
         </button>
         <button
           v-if="installState === 'available'"
@@ -129,13 +147,13 @@ onUnmounted(() => {
           type="button"
           @click="installApp"
         >
-          Install App
+          {{ t("app.installApp") }}
         </button>
-        <RouterLink class="new-task-link" to="/tasks/new">New Task</RouterLink>
+        <RouterLink class="new-task-link" to="/tasks/new">{{ t("app.newTask") }}</RouterLink>
       </div>
     </header>
 
-    <nav class="main-nav" aria-label="Primary">
+    <nav class="main-nav" :aria-label="t('nav.primaryAria')">
       <RouterLink
         v-for="item in navItems"
         :key="item.to"
@@ -146,7 +164,7 @@ onUnmounted(() => {
           'nav-link-secondary': item.variant === 'secondary',
         }"
       >
-        <span>{{ item.label }}</span>
+        <span>{{ t(item.labelKey) }}</span>
         <span class="nav-count">{{ getNavCount(item.to) }}</span>
       </RouterLink>
     </nav>

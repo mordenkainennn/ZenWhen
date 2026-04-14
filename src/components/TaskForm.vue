@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue";
+import { useI18n } from "@/i18n";
 import { formatDateTime } from "@/utils/date";
 import { computeTriggerAt } from "@/utils/task";
 import { REMINDER_PRESETS, validateTaskInput } from "@/utils/validation";
@@ -22,7 +23,7 @@ const props = withDefaults(
       dueAt: "",
       remindBeforeMinutes: 60,
     }),
-    submitLabel: "Save Task",
+    submitLabel: "",
     submitting: false,
   },
 );
@@ -46,6 +47,7 @@ const form = reactive({
 });
 
 const errorMessage = ref("");
+const { t } = useI18n();
 
 watch(
   () => props.initialValues,
@@ -60,7 +62,7 @@ watch(
 
 const triggerPreview = computed(() => {
   if (!form.dueAt) {
-    return "Select a due time to preview triggerAt";
+    return t("form.selectDueTime");
   }
 
   return formatDateTime(computeTriggerAt(form.dueAt, Number(form.remindBeforeMinutes)));
@@ -92,22 +94,22 @@ function handleSubmit() {
 <template>
   <form class="task-form" @submit.prevent="handleSubmit">
     <label>
-      <span>Title</span>
+      <span>{{ t("form.title") }}</span>
       <input v-model="form.title" type="text" maxlength="120" required :disabled="submitting" />
     </label>
 
     <label>
-      <span>Notes</span>
+      <span>{{ t("form.notes") }}</span>
       <textarea v-model="form.notes" rows="4" :disabled="submitting" />
     </label>
 
     <label>
-      <span>Due time</span>
+      <span>{{ t("form.dueTime") }}</span>
       <input v-model="form.dueAt" type="datetime-local" required :disabled="submitting" />
     </label>
 
     <label>
-      <span>Remind before (minutes)</span>
+      <span>{{ t("form.remindBefore") }}</span>
       <input
         v-model="form.remindBeforeMinutes"
         type="number"
@@ -119,7 +121,7 @@ function handleSubmit() {
     </label>
 
     <div class="preset-group">
-      <span class="preset-label">Quick presets</span>
+      <span class="preset-label">{{ t("form.quickPresets") }}</span>
       <div class="preset-list">
         <button
           v-for="preset in REMINDER_PRESETS"
@@ -136,14 +138,14 @@ function handleSubmit() {
     </div>
 
     <div class="trigger-preview">
-      <strong>Trigger preview</strong>
+      <strong>{{ t("form.triggerPreview") }}</strong>
       <p>{{ triggerPreview }}</p>
     </div>
 
-    <p v-if="errorMessage" class="form-error">{{ errorMessage }}</p>
+    <p v-if="errorMessage" class="form-error">{{ t(errorMessage) }}</p>
 
     <button class="primary-button" type="submit" :disabled="submitting">
-      {{ submitting ? "Saving..." : submitLabel }}
+      {{ submitting ? t("editor.saving") : submitLabel || t("editor.editSubmit") }}
     </button>
   </form>
 </template>

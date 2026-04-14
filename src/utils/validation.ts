@@ -13,19 +13,19 @@ export function validateTaskInput(input: {
   const title = input.title.trim();
 
   if (!title) {
-    return "Title is required.";
+    return "error.titleRequired";
   }
 
   if (title.length > 120) {
-    return "Title must be 120 characters or fewer.";
+    return "error.titleTooLong";
   }
 
   if (!input.dueAt) {
-    return "Due time is required.";
+    return "error.dueRequired";
   }
 
   if (!Number.isFinite(input.remindBeforeMinutes) || input.remindBeforeMinutes < 0) {
-    return "Remind before must be a non-negative number.";
+    return "error.remindNonNegative";
   }
 
   return "";

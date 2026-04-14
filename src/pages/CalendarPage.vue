@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
+import { useI18n } from "@/i18n";
 import LoadingState from "@/components/LoadingState.vue";
 import PageHeader from "@/components/PageHeader.vue";
 import { useTaskStore } from "@/stores/task";
@@ -18,6 +19,7 @@ import {
 const taskStore = useTaskStore();
 const visibleMonth = ref(nowIso());
 const selectedDateKey = ref(todayKey());
+const { locale, t } = useI18n();
 
 onMounted(() => {
   if (!taskStore.initialized) {
@@ -73,34 +75,34 @@ function selectDay(dateKey: string) {
 <template>
   <section class="page-stack">
     <PageHeader
-      title="Calendar"
-      description="A simplified time-distribution view for spotting busy days."
+      :title="t('calendar.title')"
+      :description="t('calendar.description')"
     />
 
     <LoadingState
       v-if="taskStore.loading"
-      title="Loading calendar"
-      description="Building your month view and daily task counts."
+      :title="t('loading.calendarTitle')"
+      :description="t('loading.calendarDescription')"
     />
 
     <section v-else class="calendar-shell">
       <div class="calendar-toolbar">
         <div class="calendar-toolbar-actions">
-          <button class="secondary-button" type="button" @click="showPreviousMonth">Previous</button>
-          <button class="secondary-button" type="button" @click="jumpToToday">Today</button>
+          <button class="secondary-button" type="button" @click="showPreviousMonth">{{ t("calendar.previous") }}</button>
+          <button class="secondary-button" type="button" @click="jumpToToday">{{ t("calendar.today") }}</button>
         </div>
         <h3>{{ formatMonthLabel(visibleMonth) }}</h3>
-        <button class="secondary-button" type="button" @click="showNextMonth">Next</button>
+        <button class="secondary-button" type="button" @click="showNextMonth">{{ t("calendar.next") }}</button>
       </div>
 
       <div class="calendar-weekdays">
-        <span>Sun</span>
-        <span>Mon</span>
-        <span>Tue</span>
-        <span>Wed</span>
-        <span>Thu</span>
-        <span>Fri</span>
-        <span>Sat</span>
+        <span>{{ locale === "zh-CN" ? "日" : "Sun" }}</span>
+        <span>{{ locale === "zh-CN" ? "一" : "Mon" }}</span>
+        <span>{{ locale === "zh-CN" ? "二" : "Tue" }}</span>
+        <span>{{ locale === "zh-CN" ? "三" : "Wed" }}</span>
+        <span>{{ locale === "zh-CN" ? "四" : "Thu" }}</span>
+        <span>{{ locale === "zh-CN" ? "五" : "Fri" }}</span>
+        <span>{{ locale === "zh-CN" ? "六" : "Sat" }}</span>
       </div>
 
       <div class="calendar-grid">
@@ -118,7 +120,7 @@ function selectDay(dateKey: string) {
         >
           <span class="calendar-day-number">{{ day.dayNumber }}</span>
           <span v-if="taskCountByDay.get(day.key)" class="calendar-day-count">
-            {{ taskCountByDay.get(day.key) }} task<span v-if="taskCountByDay.get(day.key)! > 1">s</span>
+            {{ t("calendar.dayCount", { count: taskCountByDay.get(day.key)! }) }}
           </span>
         </button>
       </div>
@@ -127,27 +129,25 @@ function selectDay(dateKey: string) {
     <section v-if="!taskStore.loading" class="day-panel">
       <header class="day-panel-header">
         <div>
-          <p class="page-kicker">Selected Day</p>
+          <p class="page-kicker">{{ t("page.selectedDay") }}</p>
           <h3>{{ selectedDayLabel }}</h3>
         </div>
-        <p class="day-panel-summary">
-          {{ selectedDayTasks.length }} active task<span v-if="selectedDayTasks.length !== 1">s</span>
-        </p>
+        <p class="day-panel-summary">{{ t("task.activeCount", { count: selectedDayTasks.length }) }}</p>
       </header>
 
       <div v-if="selectedDayTasks.length" class="day-task-list">
         <article v-for="task in selectedDayTasks" :key="task.id" class="day-task-card">
           <div class="day-task-top">
             <h4>{{ task.title }}</h4>
-            <RouterLink class="task-edit-link" :to="`/tasks/${task.id}/edit`">Edit</RouterLink>
+            <RouterLink class="task-edit-link" :to="`/tasks/${task.id}/edit`">{{ t("task.edit") }}</RouterLink>
           </div>
           <p v-if="task.notes" class="task-notes">{{ task.notes }}</p>
-          <p class="day-task-meta">Due {{ formatDateTime(task.dueAt) }}</p>
+          <p class="day-task-meta">{{ t("task.due") }} {{ formatDateTime(task.dueAt) }}</p>
         </article>
       </div>
       <div v-else class="empty-state">
-        <h3>No active tasks on this date</h3>
-        <p>Select another day to inspect your upcoming workload.</p>
+        <h3>{{ t("calendar.emptyTitle") }}</h3>
+        <p>{{ t("calendar.emptyDescription") }}</p>
       </div>
     </section>
   </section>

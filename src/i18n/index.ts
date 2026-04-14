@@ -1,0 +1,293 @@
+import dayjs from "dayjs";
+import "dayjs/locale/en";
+import "dayjs/locale/zh-cn";
+import { ref } from "vue";
+
+export type AppLocale = "zh-CN" | "en";
+
+type TranslationValue = string | ((params?: Record<string, string | number>) => string);
+
+const STORAGE_KEY = "zenwhen.locale";
+
+const messages: Record<AppLocale, Record<string, TranslationValue>> = {
+  "zh-CN": {
+    "app.name": "ZenWhen",
+    "app.tagline": "任务应该在该行动的时候浮现。",
+    "app.description": "一个低干扰提醒系统，让未来任务在正确的时机之前保持隐藏。",
+    "app.notifications": "通知",
+    "app.install": "安装",
+    "app.enableNotifications": "启用通知",
+    "app.installApp": "安装应用",
+    "app.newTask": "新建任务",
+    "app.lang.zh": "中文",
+    "app.lang.en": "English",
+    "app.languageSwitch": "语言切换",
+    "nav.primaryAria": "主导航",
+    "nav.reminder": "提醒",
+    "nav.inbox": "隐藏箱",
+    "nav.review": "检查",
+    "nav.calendar": "日历",
+    "page.currentView": "当前视图",
+    "page.selectedDay": "选中日期",
+    "page.upcomingDate": "即将到来的日期",
+    "page.triggerDate": "浮现日期",
+    "page.reminderSection": "提醒分区",
+    "status.overdue": "已过期",
+    "status.today": "今天",
+    "status.upcoming": "即将到来",
+    "status.hidden": "隐藏中",
+    "status.surfacesToday": "今天浮现",
+    "task.due": "截止时间",
+    "task.trigger": "触发时间",
+    "task.leadTime": "提前量",
+    "task.minutes": (params) => `${params?.count ?? 0} 分钟`,
+    "task.complete": "完成",
+    "task.delete": "删除",
+    "task.edit": "编辑",
+    "task.working": "处理中...",
+    "task.count": (params) => `${params?.count ?? 0} 个任务`,
+    "task.activeCount": (params) => `${params?.count ?? 0} 个活动任务`,
+    "loading.defaultTitle": "正在加载任务",
+    "loading.defaultDescription": "正在准备当前视图。",
+    "loading.reminderTitle": "正在加载提醒队列",
+    "loading.reminderDescription": "正在按紧急程度整理已触发任务。",
+    "loading.inboxTitle": "正在加载隐藏任务",
+    "loading.inboxDescription": "正在收集尚未浮现的未来任务。",
+    "loading.reviewTitle": "正在加载检查窗口",
+    "loading.reviewDescription": "正在整理未来 15 天的任务。",
+    "loading.calendarTitle": "正在加载日历",
+    "loading.calendarDescription": "正在构建月视图和每日任务数量。",
+    "loading.editorTitle": "正在加载任务编辑器",
+    "loading.editorDescription": "正在获取最新任务详情。",
+    "reminder.title": "提醒",
+    "reminder.description": "这里只展示现在应该处理的任务，并按紧急程度排序。",
+    "reminder.section.overdue": "已过期",
+    "reminder.section.today": "今天",
+    "reminder.section.upcoming": "即将到来",
+    "reminder.section.overdueDesc": "这些任务已经超过截止时间，应该优先处理。",
+    "reminder.section.todayDesc": "这些任务今天到期，并且已经进入提醒窗口。",
+    "reminder.section.upcomingDesc": "这些任务已被触发，但截止日期还在之后。",
+    "reminder.emptyTitle": "当前没有需要你处理的任务",
+    "reminder.emptyDescription": "未来任务会在触发时间到达前保持隐藏。",
+    "reminder.completeNotice": "任务已完成，并已从当前提醒队列中移除。",
+    "reminder.removeNotice": "任务已从本地存储中删除。",
+    "inbox.title": "隐藏箱",
+    "inbox.description": "未来任务会先待在这里，直到触发时间让它们浮现。",
+    "inbox.sectionDescription": "这些任务会一直保持隐藏，直到这一天到达它们的触发时间。",
+    "inbox.emptyTitle": "隐藏箱为空",
+    "inbox.emptyDescription": "你当前没有隐藏中的未来任务。",
+    "inbox.completeNotice": "任务在正式浮现前已被标记完成。",
+    "inbox.removeNotice": "未来任务已删除。",
+    "review.title": "检查",
+    "review.description": "一个安全层，用来查看未来 15 天内将要到来的任务。",
+    "review.emptyTitle": "检查窗口内没有即将到来的任务",
+    "review.emptyDescription": "检查页可以帮助你提前发现未来安排，避免被突然提醒打断。",
+    "review.completeNotice": "任务已在检查窗口中完成。",
+    "review.removeNotice": "任务已从检查窗口中删除。",
+    "calendar.title": "日历",
+    "calendar.description": "一个简化的时间分布视图，用来发现忙碌的日期。",
+    "calendar.previous": "上一月",
+    "calendar.next": "下一月",
+    "calendar.today": "今天",
+    "calendar.dayCount": (params) => `${params?.count ?? 0} 个任务`,
+    "calendar.emptyTitle": "这一天没有活动任务",
+    "calendar.emptyDescription": "选择其他日期来查看你的未来工作分布。",
+    "editor.newTitle": "新建任务",
+    "editor.editTitle": "编辑任务",
+    "editor.newDescription": "创建一个任务，并决定它应该何时浮现到提醒视图里。",
+    "editor.editDescription": "调整截止时间或提前量，ZenWhen 会重新计算触发时间。",
+    "editor.notFoundTitle": "未找到任务",
+    "editor.notFoundDescription": "你尝试编辑的任务已经不在本地存储中了。",
+    "editor.createSubmit": "创建任务",
+    "editor.editSubmit": "保存修改",
+    "editor.saving": "正在保存...",
+    "form.title": "标题",
+    "form.notes": "备注",
+    "form.dueTime": "截止时间",
+    "form.remindBefore": "提前提醒（分钟）",
+    "form.quickPresets": "快捷预设",
+    "form.triggerPreview": "触发时间预览",
+    "form.selectDueTime": "请选择截止时间以预览触发时间",
+    "error.titleRequired": "标题不能为空。",
+    "error.titleTooLong": "标题不能超过 120 个字符。",
+    "error.dueRequired": "截止时间不能为空。",
+    "error.remindNonNegative": "提前提醒必须是大于等于 0 的数字。",
+    "notFound.title": "页面不存在",
+    "notFound.description": "这个地址没有对应到 ZenWhen 中的页面。",
+    "notFound.body": "你访问的地址可能已经失效、输入不完整，或者本来就不在当前应用中。你可以先回到提醒页继续操作。",
+    "notFound.back": "返回提醒页",
+    "confirm.deleteTask": "要从本地存储中删除这个任务吗？",
+    "confirm.deleteInboxTask": "要删除这个隐藏中的未来任务吗？",
+    "confirm.deleteReviewTask": "要从检查窗口中删除这个任务吗？",
+    "install.available": "可安装",
+    "install.installed": "已安装",
+    "install.unsupported": "不支持",
+    "notification.default": "默认",
+    "notification.granted": "已允许",
+    "notification.denied": "已拒绝",
+    "notification.unsupported": "不支持",
+  },
+  en: {
+    "app.name": "ZenWhen",
+    "app.tagline": "Tasks should surface when it is time to act.",
+    "app.description": "A low-interruption reminder system that keeps future tasks hidden until the right moment.",
+    "app.notifications": "Notifications",
+    "app.install": "Install",
+    "app.enableNotifications": "Enable Notifications",
+    "app.installApp": "Install App",
+    "app.newTask": "New Task",
+    "app.lang.zh": "中文",
+    "app.lang.en": "English",
+    "app.languageSwitch": "Language switch",
+    "nav.primaryAria": "Primary navigation",
+    "nav.reminder": "Reminder",
+    "nav.inbox": "Inbox",
+    "nav.review": "Review",
+    "nav.calendar": "Calendar",
+    "page.currentView": "Current View",
+    "page.selectedDay": "Selected Day",
+    "page.upcomingDate": "Upcoming Date",
+    "page.triggerDate": "Trigger Date",
+    "page.reminderSection": "Reminder Section",
+    "status.overdue": "Overdue",
+    "status.today": "Today",
+    "status.upcoming": "Upcoming",
+    "status.hidden": "Hidden",
+    "status.surfacesToday": "Surfaces Today",
+    "task.due": "Due",
+    "task.trigger": "Trigger",
+    "task.leadTime": "Lead time",
+    "task.minutes": (params) => `${params?.count ?? 0} minutes`,
+    "task.complete": "Complete",
+    "task.delete": "Delete",
+    "task.edit": "Edit",
+    "task.working": "Working...",
+    "task.count": (params) => `${params?.count ?? 0} task${Number(params?.count ?? 0) === 1 ? "" : "s"}`,
+    "task.activeCount": (params) => `${params?.count ?? 0} active task${Number(params?.count ?? 0) === 1 ? "" : "s"}`,
+    "loading.defaultTitle": "Loading tasks",
+    "loading.defaultDescription": "Preparing your current task view.",
+    "loading.reminderTitle": "Loading reminder queue",
+    "loading.reminderDescription": "Sorting triggered tasks by urgency.",
+    "loading.inboxTitle": "Loading hidden tasks",
+    "loading.inboxDescription": "Collecting future tasks that have not surfaced yet.",
+    "loading.reviewTitle": "Loading review window",
+    "loading.reviewDescription": "Gathering the next 15 days of upcoming work.",
+    "loading.calendarTitle": "Loading calendar",
+    "loading.calendarDescription": "Building your month view and daily task counts.",
+    "loading.editorTitle": "Loading task editor",
+    "loading.editorDescription": "Fetching the latest task details.",
+    "reminder.title": "Reminder",
+    "reminder.description": "Only tasks that should be actionable now belong here, sorted by urgency.",
+    "reminder.section.overdue": "Overdue",
+    "reminder.section.today": "Today",
+    "reminder.section.upcoming": "Upcoming",
+    "reminder.section.overdueDesc": "Tasks that already passed their due time and need attention first.",
+    "reminder.section.todayDesc": "Tasks due later today that are already within their reminder window.",
+    "reminder.section.upcomingDesc": "Triggered tasks that are visible now but still due on a later date.",
+    "reminder.emptyTitle": "Nothing needs your attention right now",
+    "reminder.emptyDescription": "Future tasks stay hidden until their trigger time arrives.",
+    "reminder.completeNotice": "Task completed and removed from your active reminder queue.",
+    "reminder.removeNotice": "Task deleted from local storage.",
+    "inbox.title": "Inbox",
+    "inbox.description": "Future tasks live here until their trigger time surfaces them.",
+    "inbox.sectionDescription": "These tasks stay hidden until this date reaches their trigger time.",
+    "inbox.emptyTitle": "Inbox is clear",
+    "inbox.emptyDescription": "You have no hidden future tasks at the moment.",
+    "inbox.completeNotice": "Task marked complete before it needed to surface.",
+    "inbox.removeNotice": "Future task deleted.",
+    "review.title": "Review",
+    "review.description": "A safety layer for checking what is coming in the next 15 days.",
+    "review.emptyTitle": "No upcoming tasks in the review window",
+    "review.emptyDescription": "Review helps catch future commitments before they surprise you.",
+    "review.completeNotice": "Task completed from the review window.",
+    "review.removeNotice": "Task removed from the review window.",
+    "calendar.title": "Calendar",
+    "calendar.description": "A simplified time-distribution view for spotting busy days.",
+    "calendar.previous": "Previous",
+    "calendar.next": "Next",
+    "calendar.today": "Today",
+    "calendar.dayCount": (params) => `${params?.count ?? 0} task${Number(params?.count ?? 0) === 1 ? "" : "s"}`,
+    "calendar.emptyTitle": "No active tasks on this date",
+    "calendar.emptyDescription": "Select another day to inspect your upcoming workload.",
+    "editor.newTitle": "New Task",
+    "editor.editTitle": "Edit Task",
+    "editor.newDescription": "Create a task and decide when it should surface into your reminder view.",
+    "editor.editDescription": "Adjust the due time or lead time and ZenWhen will recompute triggerAt.",
+    "editor.notFoundTitle": "Task not found",
+    "editor.notFoundDescription": "The task you tried to edit is no longer available in local storage.",
+    "editor.createSubmit": "Create Task",
+    "editor.editSubmit": "Save Changes",
+    "editor.saving": "Saving...",
+    "form.title": "Title",
+    "form.notes": "Notes",
+    "form.dueTime": "Due time",
+    "form.remindBefore": "Remind before (minutes)",
+    "form.quickPresets": "Quick presets",
+    "form.triggerPreview": "Trigger preview",
+    "form.selectDueTime": "Select a due time to preview triggerAt",
+    "error.titleRequired": "Title is required.",
+    "error.titleTooLong": "Title must be 120 characters or fewer.",
+    "error.dueRequired": "Due time is required.",
+    "error.remindNonNegative": "Remind before must be a non-negative number.",
+    "notFound.title": "Page Not Found",
+    "notFound.description": "This route does not map to a ZenWhen view.",
+    "notFound.body": "The address may be outdated, incomplete, or never existed in this app. You can head back to the reminder queue and continue from there.",
+    "notFound.back": "Back to Reminder",
+    "confirm.deleteTask": "Delete this task from local storage?",
+    "confirm.deleteInboxTask": "Delete this hidden future task?",
+    "confirm.deleteReviewTask": "Delete this task from the review window?",
+    "install.available": "available",
+    "install.installed": "installed",
+    "install.unsupported": "unsupported",
+    "notification.default": "default",
+    "notification.granted": "granted",
+    "notification.denied": "denied",
+    "notification.unsupported": "unsupported",
+  },
+};
+
+const savedLocale =
+  typeof window !== "undefined" ? (window.localStorage.getItem(STORAGE_KEY) as AppLocale | null) : null;
+
+export const locale = ref<AppLocale>(savedLocale === "en" ? "en" : "zh-CN");
+
+function resolveLocaleCode(value: AppLocale) {
+  return value === "zh-CN" ? "zh-cn" : "en";
+}
+
+function resolveMessage(key: string) {
+  return messages[locale.value][key] ?? messages.en[key] ?? key;
+}
+
+export function applyLocale(value: AppLocale) {
+  locale.value = value;
+  dayjs.locale(resolveLocaleCode(value));
+
+  if (typeof document !== "undefined") {
+    document.documentElement.lang = value;
+  }
+
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(STORAGE_KEY, value);
+  }
+}
+
+export function t(key: string, params?: Record<string, string | number>) {
+  const message = resolveMessage(key);
+
+  if (typeof message === "function") {
+    return message(params);
+  }
+
+  return message;
+}
+
+export function useI18n() {
+  return {
+    locale,
+    t,
+    setLocale: applyLocale,
+  };
+}
+
+applyLocale(locale.value);

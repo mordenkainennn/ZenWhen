@@ -9,7 +9,7 @@ describe("task input validation", () => {
         dueAt: "2026-04-20T18:00",
         remindBeforeMinutes: 60,
       }),
-    ).toBe("Title is required.");
+    ).toBe("error.titleRequired");
   });
 
   it("requires a due time", () => {
@@ -19,7 +19,7 @@ describe("task input validation", () => {
         dueAt: "",
         remindBeforeMinutes: 60,
       }),
-    ).toBe("Due time is required.");
+    ).toBe("error.dueRequired");
   });
 
   it("rejects negative reminder values", () => {
@@ -29,7 +29,7 @@ describe("task input validation", () => {
         dueAt: "2026-04-20T18:00",
         remindBeforeMinutes: -5,
       }),
-    ).toBe("Remind before must be a non-negative number.");
+    ).toBe("error.remindNonNegative");
   });
 
   it("accepts valid task input", () => {

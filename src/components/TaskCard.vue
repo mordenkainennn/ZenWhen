@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { useI18n } from "@/i18n";
 import type { Task } from "@/types/task";
 import { formatDateTime, nowIso } from "@/utils/date";
 import { getInboxStatus, getReminderStatus } from "@/utils/task";
@@ -15,11 +16,13 @@ const emit = defineEmits<{
   remove: [taskId: string];
 }>();
 
+const { t } = useI18n();
+
 const status = computed(() => {
   const now = nowIso();
 
   if (props.statusContext === "inbox") {
-    return getInboxStatus(props.task, now);
+      return getInboxStatus(props.task, now);
   }
 
   return getReminderStatus(props.task, now);
@@ -37,8 +40,8 @@ function handleRemove() {
 <template>
   <article class="task-card">
     <div class="task-card-top">
-      <span class="task-status" :class="`task-status-${status.tone}`">{{ status.label }}</span>
-      <RouterLink class="task-edit-link" :to="`/tasks/${task.id}/edit`">Edit</RouterLink>
+      <span class="task-status" :class="`task-status-${status.tone}`">{{ t(`status.${status.key}`) }}</span>
+      <RouterLink class="task-edit-link" :to="`/tasks/${task.id}/edit`">{{ t("task.edit") }}</RouterLink>
     </div>
 
     <h3>{{ task.title }}</h3>
@@ -46,25 +49,25 @@ function handleRemove() {
 
     <dl class="task-meta">
       <div>
-        <dt>Due</dt>
+        <dt>{{ t("task.due") }}</dt>
         <dd>{{ formatDateTime(task.dueAt) }}</dd>
       </div>
       <div>
-        <dt>Trigger</dt>
+        <dt>{{ t("task.trigger") }}</dt>
         <dd>{{ formatDateTime(task.triggerAt) }}</dd>
       </div>
       <div>
-        <dt>Lead time</dt>
-        <dd>{{ task.remindBeforeMinutes }} minutes</dd>
+        <dt>{{ t("task.leadTime") }}</dt>
+        <dd>{{ t("task.minutes", { count: task.remindBeforeMinutes }) }}</dd>
       </div>
     </dl>
 
     <div class="task-actions">
       <button class="secondary-button" type="button" :disabled="busy" @click="handleComplete">
-        {{ busy ? "Working..." : "Complete" }}
+        {{ busy ? t("task.working") : t("task.complete") }}
       </button>
       <button class="danger-button" type="button" :disabled="busy" @click="handleRemove">
-        {{ busy ? "Working..." : "Delete" }}
+        {{ busy ? t("task.working") : t("task.delete") }}
       </button>
     </div>
   </article>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from "@/i18n";
 import LoadingState from "@/components/LoadingState.vue";
 import PageHeader from "@/components/PageHeader.vue";
 import TaskForm from "@/components/TaskForm.vue";
@@ -19,6 +20,7 @@ const existingTask = ref<Task | null>(null);
 const missingTask = ref(false);
 const editorLoading = ref(false);
 const submitting = ref(false);
+const { t } = useI18n();
 
 const initialValues = computed(() => ({
   title: existingTask.value?.title ?? "",
@@ -97,29 +99,25 @@ async function handleSubmit(values: {
 <template>
   <section class="page-stack">
     <PageHeader
-      :title="isEditMode ? 'Edit Task' : 'New Task'"
-      :description="
-        isEditMode
-          ? 'Adjust the due time or lead time and ZenWhen will recompute triggerAt.'
-          : 'Create a task and decide when it should surface into your reminder view.'
-      "
+      :title="isEditMode ? t('editor.editTitle') : t('editor.newTitle')"
+      :description="isEditMode ? t('editor.editDescription') : t('editor.newDescription')"
     />
 
     <LoadingState
       v-if="taskStore.loading || editorLoading"
-      title="Loading task editor"
-      description="Fetching the latest task details."
+      :title="t('loading.editorTitle')"
+      :description="t('loading.editorDescription')"
     />
 
     <div v-else-if="missingTask" class="empty-state">
-      <h3>Task not found</h3>
-      <p>The task you tried to edit is no longer available in local storage.</p>
+      <h3>{{ t("editor.notFoundTitle") }}</h3>
+      <p>{{ t("editor.notFoundDescription") }}</p>
     </div>
 
     <TaskForm
       v-else
       :initial-values="initialValues"
-      :submit-label="isEditMode ? 'Save Changes' : 'Create Task'"
+      :submit-label="isEditMode ? t('editor.editSubmit') : t('editor.createSubmit')"
       :submitting="submitting"
       @submit="handleSubmit"
     />
