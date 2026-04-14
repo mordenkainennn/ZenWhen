@@ -1,5 +1,7 @@
 # ZenWhen
 
+[简体中文说明](README.zh-CN.md)
+
 ZenWhen is a low-interruption reminder system built around one idea:
 
 > tasks should appear when it is time to act, not compete for attention all day
@@ -19,7 +21,7 @@ The app is designed to reduce cognitive load:
 - `Review`: provides a low-frequency safety check for upcoming tasks
 - `Calendar`: offers a simple time-distribution view
 
-## Planned Stack
+## Current Stack
 
 - Vue 3
 - TypeScript
@@ -32,12 +34,25 @@ The app is designed to reduce cognitive load:
 
 ## Project Status
 
-This repository now includes the initial Vue 3 + TypeScript + Vite application skeleton and is ready for feature development.
+ZenWhen is now in a usable MVP state.
+
+Current capabilities include:
+
+- Create, edit, complete, and delete tasks
+- Reminder, Inbox, Review, and Calendar views
+- Local persistence with Dexie / IndexedDB
+- Best-effort local notifications
+- PWA install and offline support
+- Simplified Chinese / English UI with Chinese as the default language
+- Cloudflare Pages deployment configuration
+- Core task-logic tests with Vitest
 
 Available documentation:
 
 - Product document: [docs/dev.md](docs/dev.md)
 - Technical plan: [docs/technical-plan.md](docs/technical-plan.md)
+- Entry page notes: [docs/entry-page.md](docs/entry-page.md)
+- Entry page action-first revision: [docs/rentry-page-v2.md](docs/rentry-page-v2.md)
 
 ## MVP Scope
 
@@ -56,15 +71,6 @@ Out of scope for MVP:
 - Collaboration
 - Tags and project systems
 - AI features
-
-## Development Direction
-
-The first implementation milestone is:
-
-1. Create a task
-2. Compute `triggerAt`
-3. Split tasks into `Reminder` and `Inbox`
-4. Persist tasks locally after refresh
 
 ## Getting Started
 
@@ -85,6 +91,18 @@ Type-check the app:
 
 ```bash
 npm run typecheck
+```
+
+Run automated tests:
+
+```bash
+npm run test
+```
+
+Run the full local check suite:
+
+```bash
+npm run check
 ```
 
 ## Deploying to Cloudflare Pages
