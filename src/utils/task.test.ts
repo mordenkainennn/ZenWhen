@@ -89,6 +89,18 @@ describe("task utilities", () => {
     ).toBe("hidden");
   });
 
+  it("compares date-time by instant instead of raw string order", () => {
+    const task = createTask({
+      dueAt: "2026-04-20T00:30:00+09:00",
+      triggerAt: "2026-04-19T23:30:00+09:00",
+    });
+
+    expect(isReminderTask(task, "2026-04-19T15:00:00.000Z")).toBe(true);
+    expect(isReviewTask(task, "2026-04-19T16:00:00.000Z", "2026-04-21T00:00:00.000Z")).toBe(
+      false,
+    );
+  });
+
   it("sorts reminder tasks with overdue items first, then dueAt, then createdAt", () => {
     const now = "2026-04-20T12:00:00.000Z";
     const tasks = [

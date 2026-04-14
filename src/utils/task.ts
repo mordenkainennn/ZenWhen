@@ -1,24 +1,29 @@
 import dayjs from "dayjs";
 import type { Task } from "@/types/task";
 
+function toTime(value: string) {
+  return dayjs(value).valueOf();
+}
+
 export function computeTriggerAt(dueAt: string, remindBeforeMinutes: number) {
   return dayjs(dueAt).subtract(remindBeforeMinutes, "minute").toISOString();
 }
 
 export function isReminderTask(task: Task, now: string) {
-  return now >= task.triggerAt && !task.completed && !task.archived;
+  return toTime(now) >= toTime(task.triggerAt) && !task.completed && !task.archived;
 }
 
 export function isInboxTask(task: Task, now: string) {
-  return now < task.triggerAt && !task.completed && !task.archived;
+  return toTime(now) < toTime(task.triggerAt) && !task.completed && !task.archived;
 }
 
 export function isReviewTask(task: Task, now: string, end: string) {
-  return task.dueAt >= now && task.dueAt <= end && !task.completed && !task.archived;
+  const dueAtTime = toTime(task.dueAt);
+  return dueAtTime >= toTime(now) && dueAtTime <= toTime(end) && !task.completed && !task.archived;
 }
 
 export function isOverdueTask(task: Task, now: string) {
-  return task.dueAt < now && !task.completed && !task.archived;
+  return toTime(task.dueAt) < toTime(now) && !task.completed && !task.archived;
 }
 
 export function getReminderStatus(task: Task, now: string) {
@@ -65,10 +70,12 @@ export function sortReminderTasks(tasks: Task[], now: string) {
       return leftOverdue - rightOverdue;
     }
 
-    if (left.dueAt !== right.dueAt) {
-      return left.dueAt.localeCompare(right.dueAt);
+    const dueAtDiff = toTime(left.dueAt) - toTime(right.dueAt);
+
+    if (dueAtDiff !== 0) {
+      return dueAtDiff;
     }
 
-    return left.createdAt.localeCompare(right.createdAt);
+    return toTime(left.createdAt) - toTime(right.createdAt);
   });
 }
