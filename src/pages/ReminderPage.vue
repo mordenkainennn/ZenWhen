@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
+import { RouterLink } from "vue-router";
 import { useI18n } from "@/i18n";
 import LoadingState from "@/components/LoadingState.vue";
 import PageHeader from "@/components/PageHeader.vue";
 import TaskCard from "@/components/TaskCard.vue";
+import { requestNotificationPermission } from "@/services/notification-service";
 import { useTaskStore } from "@/stores/task";
 import type { Task } from "@/types/task";
 import { getReminderStatus } from "@/utils/task";
@@ -19,6 +21,15 @@ onMounted(() => {
     void taskStore.loadTasks();
   }
 });
+
+async function enableNotifications() {
+  const permission = await requestNotificationPermission();
+  taskStore.setNotificationPermission(permission);
+
+  if (permission === "granted") {
+    await taskStore.syncTriggeredNotifications();
+  }
+}
 
 async function handleComplete(taskId: string) {
   processingTaskId.value = taskId;
@@ -135,6 +146,17 @@ const reminderSections = computed(() => {
     <div v-else class="empty-state">
       <h3>{{ t("reminder.emptyTitle") }}</h3>
       <p>{{ t("reminder.emptyDescription") }}</p>
+      <div class="empty-state-actions">
+        <RouterLink class="primary-button" to="/tasks/new">{{ t("app.newTask") }}</RouterLink>
+        <button
+          v-if="taskStore.notificationPermission !== 'granted'"
+          class="secondary-button"
+          type="button"
+          @click="enableNotifications"
+        >
+          {{ t("app.enableNotifications") }}
+        </button>
+      </div>
     </div>
   </section>
 </template>

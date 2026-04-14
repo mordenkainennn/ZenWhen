@@ -73,6 +73,8 @@ npm install
 npm run dev
 ```
 
+By default, the dev server is exposed to your local network. After startup, open the printed LAN address such as `http://192.168.x.x:5173` from your phone or another computer on the same Wi-Fi.
+
 Build for production:
 
 ```bash

@@ -2,7 +2,6 @@
 import { onMounted, onUnmounted, ref } from "vue";
 import { RouterLink, RouterView, useRoute } from "vue-router";
 import { useI18n } from "@/i18n";
-import { requestNotificationPermission } from "@/services/notification-service";
 import { useTaskStore } from "@/stores/task";
 import { todayKey } from "@/utils/date";
 
@@ -41,15 +40,6 @@ function getNavCount(path: string) {
   return 0;
 }
 
-async function enableNotifications() {
-  const permission = await requestNotificationPermission();
-  taskStore.setNotificationPermission(permission);
-
-  if (permission === "granted") {
-    await taskStore.syncTriggeredNotifications();
-  }
-}
-
 function handleBeforeInstallPrompt(event: Event) {
   event.preventDefault();
   installPromptEvent.value = event as BeforeInstallPromptEvent;
@@ -59,23 +49,6 @@ function handleBeforeInstallPrompt(event: Event) {
 function handleAppInstalled() {
   installPromptEvent.value = null;
   installState.value = "installed";
-}
-
-async function installApp() {
-  if (!installPromptEvent.value) {
-    return;
-  }
-
-  await installPromptEvent.value.prompt();
-  const choice = await installPromptEvent.value.userChoice;
-
-  if (choice.outcome === "accepted") {
-    installState.value = "installed";
-    installPromptEvent.value = null;
-    return;
-  }
-
-  installState.value = "available";
 }
 
 onMounted(() => {
@@ -100,77 +73,75 @@ onUnmounted(() => {
 <template>
   <div class="app-shell">
     <header class="hero">
-      <div>
+      <div class="hero-copy-block">
         <p class="eyebrow">{{ t("app.name") }}</p>
-        <h1>{{ t("app.tagline") }}</h1>
-        <p class="hero-copy">{{ t("app.description") }}</p>
-        <p class="hero-meta">
-          {{ t("app.notifications") }}:
-          <strong>{{ t(`notification.${taskStore.notificationPermission}`) }}</strong>
-        </p>
-        <p class="hero-meta">
-          {{ t("app.install") }}:
-          <strong>{{ t(`install.${installState}`) }}</strong>
-        </p>
+        <h1 class="hero-title">{{ t("app.heroTitle") }}</h1>
+        <p class="hero-copy">{{ t("app.heroSubtitle") }}</p>
       </div>
 
-      <div class="hero-actions">
-        <div class="language-switch" role="group" :aria-label="t('app.languageSwitch')">
-          <button
-            class="secondary-button language-button"
-            :class="{ 'language-button-active': locale === 'zh-CN' }"
-            type="button"
-            @click="setLocale('zh-CN')"
-          >
-            {{ t("app.lang.zh") }}
-          </button>
-          <button
-            class="secondary-button language-button"
-            :class="{ 'language-button-active': locale === 'en' }"
-            type="button"
-            @click="setLocale('en')"
-          >
-            {{ t("app.lang.en") }}
-          </button>
-        </div>
-        <button
-          v-if="taskStore.notificationPermission !== 'granted'"
-          class="secondary-button"
-          type="button"
-          @click="enableNotifications"
-        >
-          {{ t("app.enableNotifications") }}
-        </button>
-        <button
-          v-if="installState === 'available'"
-          class="secondary-button"
-          type="button"
-          @click="installApp"
-        >
-          {{ t("app.installApp") }}
-        </button>
-        <RouterLink class="new-task-link" to="/tasks/new">{{ t("app.newTask") }}</RouterLink>
-      </div>
     </header>
-
-    <nav class="main-nav" :aria-label="t('nav.primaryAria')">
-      <RouterLink
-        v-for="item in navItems"
-        :key="item.to"
-        :to="item.to"
-        class="nav-link"
-        :class="{
-          active: route.path === item.to,
-          'nav-link-secondary': item.variant === 'secondary',
-        }"
-      >
-        <span>{{ t(item.labelKey) }}</span>
-        <span class="nav-count">{{ getNavCount(item.to) }}</span>
-      </RouterLink>
-    </nav>
 
     <main class="content-panel">
       <RouterView />
     </main>
+
+    <section class="nav-section">
+      <div class="nav-section-header">
+        <p class="page-kicker">{{ t("nav.title") }}</p>
+        <p class="nav-section-description">{{ t("nav.description") }}</p>
+      </div>
+
+      <nav class="main-nav" :aria-label="t('nav.primaryAria')">
+        <RouterLink
+          v-for="item in navItems"
+          :key="item.to"
+          :to="item.to"
+          class="nav-link"
+          :class="{
+            active: route.path === item.to,
+            'nav-link-secondary': item.variant === 'secondary',
+          }"
+        >
+          <span>{{ t(item.labelKey) }}</span>
+          <span class="nav-count">{{ getNavCount(item.to) }}</span>
+        </RouterLink>
+      </nav>
+    </section>
+
+    <section class="status-section" :aria-label="t('app.statusTitle')">
+      <p class="page-kicker">{{ t("app.statusTitle") }}</p>
+      <div class="status-strip">
+        <span class="status-pill">
+          <span class="status-label">{{ t("app.notifications") }}</span>
+          <strong>{{ t(`notification.${taskStore.notificationPermission}`) }}</strong>
+        </span>
+        <span class="status-pill">
+          <span class="status-label">{{ t("app.install") }}</span>
+          <strong>{{ t(`install.${installState}`) }}</strong>
+        </span>
+      </div>
+    </section>
+
+    <section class="language-section">
+      <p class="page-kicker">{{ t("app.languageSection") }}</p>
+      <div class="language-switch" role="group" :aria-label="t('app.languageSwitch')">
+        <button
+          class="secondary-button language-button"
+          :class="{ 'language-button-active': locale === 'zh-CN' }"
+          type="button"
+          @click="setLocale('zh-CN')"
+        >
+          {{ t("app.lang.zh") }}
+        </button>
+        <button
+          class="secondary-button language-button"
+          :class="{ 'language-button-active': locale === 'en' }"
+          type="button"
+          @click="setLocale('en')"
+        >
+          {{ t("app.lang.en") }}
+        </button>
+      </div>
+    </section>
   </div>
 </template>
