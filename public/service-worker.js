@@ -1,20 +1,33 @@
-const CACHE_NAME = "zenwhen-v1";
+const CACHE_NAME = "zenwhen-v2";
 const APP_SHELL = ["/", "/manifest.json", "/icon.svg", "/icon-maskable.svg", "/offline.html"];
+
+async function cacheAppShell() {
+  const cache = await caches.open(CACHE_NAME);
+  await cache.addAll(APP_SHELL);
+}
+
+async function clearOldCaches() {
+  const keys = await caches.keys();
+  const staleKeys = keys.filter((key) => key !== CACHE_NAME);
+  await Promise.all(staleKeys.map((key) => caches.delete(key)));
+}
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)),
+    (async () => {
+      await cacheAppShell();
+      await self.skipWaiting();
+    })(),
   );
-  self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))),
-    ),
+    (async () => {
+      await clearOldCaches();
+      await self.clients.claim();
+    })(),
   );
-  event.waitUntil(self.clients.claim());
 });
 
 self.addEventListener("fetch", (event) => {
