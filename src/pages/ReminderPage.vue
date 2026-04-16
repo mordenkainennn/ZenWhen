@@ -111,6 +111,17 @@ const reminderSections = computed(() => {
       :description="t('reminder.description')"
     />
     <div v-if="actionMessage" class="page-notice">{{ actionMessage }}</div>
+    <div class="empty-state-actions">
+      <RouterLink class="primary-button" to="/tasks/new">{{ t("app.newTask") }}</RouterLink>
+      <button
+        v-if="taskStore.notificationPermission !== 'granted'"
+        class="secondary-button"
+        type="button"
+        @click="enableNotifications"
+      >
+        {{ t("app.enableNotifications") }}
+      </button>
+    </div>
 
     <LoadingState
       v-if="taskStore.loading"
@@ -146,17 +157,6 @@ const reminderSections = computed(() => {
     <div v-else class="empty-state">
       <h3>{{ t("reminder.emptyTitle") }}</h3>
       <p>{{ t("reminder.emptyDescription") }}</p>
-      <div class="empty-state-actions">
-        <RouterLink class="primary-button" to="/tasks/new">{{ t("app.newTask") }}</RouterLink>
-        <button
-          v-if="taskStore.notificationPermission !== 'granted'"
-          class="secondary-button"
-          type="button"
-          @click="enableNotifications"
-        >
-          {{ t("app.enableNotifications") }}
-        </button>
-      </div>
     </div>
   </section>
 </template>
