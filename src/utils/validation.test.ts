@@ -7,7 +7,7 @@ describe("task input validation", () => {
       validateTaskInput({
         title: "   ",
         dueAt: "2026-04-20T18:00",
-        remindBeforeMinutes: 60,
+        remindBeforeDays: 7,
       }),
     ).toBe("error.titleRequired");
   });
@@ -17,7 +17,7 @@ describe("task input validation", () => {
       validateTaskInput({
         title: "Pay rent",
         dueAt: "",
-        remindBeforeMinutes: 60,
+        remindBeforeDays: 7,
       }),
     ).toBe("error.dueRequired");
   });
@@ -27,7 +27,7 @@ describe("task input validation", () => {
       validateTaskInput({
         title: "Pay rent",
         dueAt: "2026-04-20T18:00",
-        remindBeforeMinutes: -5,
+        remindBeforeDays: -1,
       }),
     ).toBe("error.remindNonNegative");
   });
@@ -37,7 +37,7 @@ describe("task input validation", () => {
       validateTaskInput({
         title: "Pay rent",
         dueAt: "2026-04-20T18:00",
-        remindBeforeMinutes: 60,
+        remindBeforeDays: 7,
       }),
     ).toBe("");
   });

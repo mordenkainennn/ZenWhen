@@ -16,8 +16,8 @@ function createTask(overrides: Partial<Task> = {}): Task {
     title: "Test task",
     notes: "",
     dueAt: "2026-04-20T10:00:00.000Z",
-    remindBeforeMinutes: 60,
-    triggerAt: "2026-04-20T09:00:00.000Z",
+    remindBeforeDays: 7,
+    triggerAt: "2026-04-13T10:00:00.000Z",
     completed: false,
     archived: false,
     notifiedAt: null,
@@ -29,14 +29,14 @@ function createTask(overrides: Partial<Task> = {}): Task {
 
 describe("task utilities", () => {
   it("computes triggerAt from dueAt and reminder offset", () => {
-    expect(computeTriggerAt("2026-04-20T10:00:00.000Z", 90)).toBe("2026-04-20T08:30:00.000Z");
+    expect(computeTriggerAt("2026-04-20T10:00:00.000Z", 7)).toBe("2026-04-13T10:00:00.000Z");
   });
 
   it("classifies reminder and inbox tasks around triggerAt", () => {
     const task = createTask();
 
-    expect(isInboxTask(task, "2026-04-20T08:59:59.000Z")).toBe(true);
-    expect(isReminderTask(task, "2026-04-20T09:00:00.000Z")).toBe(true);
+    expect(isInboxTask(task, "2026-04-13T09:59:59.000Z")).toBe(true);
+    expect(isReminderTask(task, "2026-04-13T10:00:00.000Z")).toBe(true);
   });
 
   it("limits review tasks to the configured window", () => {

@@ -1,14 +1,13 @@
 export const REMINDER_PRESETS = [
-  { label: "30m", minutes: 30 },
-  { label: "1h", minutes: 60 },
-  { label: "3h", minutes: 180 },
-  { label: "1d", minutes: 1440 },
+  { label: "7d", days: 7 },
+  { label: "14d", days: 14 },
+  { label: "30d", days: 30 },
 ];
 
 export function validateTaskInput(input: {
   title: string;
   dueAt: string;
-  remindBeforeMinutes: number;
+  remindBeforeDays: number;
 }) {
   const title = input.title.trim();
 
@@ -24,7 +23,7 @@ export function validateTaskInput(input: {
     return "error.dueRequired";
   }
 
-  if (!Number.isFinite(input.remindBeforeMinutes) || input.remindBeforeMinutes < 0) {
+  if (!Number.isFinite(input.remindBeforeDays) || input.remindBeforeDays < 0) {
     return "error.remindNonNegative";
   }
 

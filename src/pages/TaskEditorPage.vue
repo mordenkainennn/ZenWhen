@@ -26,7 +26,7 @@ const initialValues = computed(() => ({
   title: existingTask.value?.title ?? "",
   notes: existingTask.value?.notes ?? "",
   dueAt: existingTask.value ? formatLocalInputDateTime(existingTask.value.dueAt) : "",
-  remindBeforeMinutes: existingTask.value?.remindBeforeMinutes ?? 60,
+  remindBeforeDays: existingTask.value?.remindBeforeDays ?? 7,
 }));
 
 const isEditMode = computed(() => Boolean(props.id));
@@ -52,7 +52,7 @@ async function handleSubmit(values: {
   title: string;
   notes: string;
   dueAt: string;
-  remindBeforeMinutes: number;
+  remindBeforeDays: number;
 }) {
   if (submitting.value) {
     return;
@@ -69,8 +69,8 @@ async function handleSubmit(values: {
         title: values.title,
         notes: values.notes,
         dueAt,
-        remindBeforeMinutes: values.remindBeforeMinutes,
-        triggerAt: computeTriggerAt(dueAt, values.remindBeforeMinutes),
+        remindBeforeDays: values.remindBeforeDays,
+        triggerAt: computeTriggerAt(dueAt, values.remindBeforeDays),
         updatedAt: timestamp,
       });
     } else {
@@ -79,8 +79,8 @@ async function handleSubmit(values: {
         title: values.title,
         notes: values.notes,
         dueAt,
-        remindBeforeMinutes: values.remindBeforeMinutes,
-        triggerAt: computeTriggerAt(dueAt, values.remindBeforeMinutes),
+        remindBeforeDays: values.remindBeforeDays,
+        triggerAt: computeTriggerAt(dueAt, values.remindBeforeDays),
         completed: false,
         archived: false,
         notifiedAt: null,

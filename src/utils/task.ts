@@ -1,8 +1,8 @@
 import dayjs from "dayjs";
 import type { Task } from "@/types/task";
 
-export function computeTriggerAt(dueAt: string, remindBeforeMinutes: number) {
-  return dayjs(dueAt).subtract(remindBeforeMinutes, "minute").toISOString();
+export function computeTriggerAt(dueAt: string, remindBeforeDays: number) {
+  return dayjs(dueAt).subtract(remindBeforeDays, "day").toISOString();
 }
 
 export function isReminderTask(task: Task, now: string) {

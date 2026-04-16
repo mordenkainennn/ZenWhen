@@ -11,7 +11,7 @@ const props = withDefaults(
       title: string;
       notes: string;
       dueAt: string;
-      remindBeforeMinutes: number;
+      remindBeforeDays: number;
     };
     submitLabel?: string;
     submitting?: boolean;
@@ -21,7 +21,7 @@ const props = withDefaults(
       title: "",
       notes: "",
       dueAt: "",
-      remindBeforeMinutes: 60,
+      remindBeforeDays: 7,
     }),
     submitLabel: "",
     submitting: false,
@@ -34,7 +34,7 @@ const emit = defineEmits<{
       title: string;
       notes: string;
       dueAt: string;
-      remindBeforeMinutes: number;
+      remindBeforeDays: number;
     },
   ];
 }>();
@@ -43,7 +43,7 @@ const form = reactive({
   title: props.initialValues.title,
   notes: props.initialValues.notes,
   dueAt: props.initialValues.dueAt,
-  remindBeforeMinutes: props.initialValues.remindBeforeMinutes,
+  remindBeforeDays: props.initialValues.remindBeforeDays,
 });
 
 const errorMessage = ref("");
@@ -55,7 +55,7 @@ watch(
     form.title = value.title;
     form.notes = value.notes;
     form.dueAt = value.dueAt;
-    form.remindBeforeMinutes = value.remindBeforeMinutes;
+    form.remindBeforeDays = value.remindBeforeDays;
   },
   { deep: true },
 );
@@ -65,17 +65,17 @@ const triggerPreview = computed(() => {
     return t("form.selectDueTime");
   }
 
-  return formatDateTime(computeTriggerAt(form.dueAt, Number(form.remindBeforeMinutes)));
+  return formatDateTime(computeTriggerAt(form.dueAt, Number(form.remindBeforeDays)));
 });
 
 function handleSubmit() {
   const title = form.title.trim();
-  const remindBeforeMinutes = Number(form.remindBeforeMinutes);
+  const remindBeforeDays = Number(form.remindBeforeDays);
 
   errorMessage.value = validateTaskInput({
     title,
     dueAt: form.dueAt,
-    remindBeforeMinutes,
+    remindBeforeDays,
   });
 
   if (errorMessage.value) {
@@ -86,7 +86,7 @@ function handleSubmit() {
     title,
     notes: form.notes.trim(),
     dueAt: form.dueAt,
-    remindBeforeMinutes,
+    remindBeforeDays,
   });
 }
 </script>
@@ -111,10 +111,10 @@ function handleSubmit() {
     <label>
       <span>{{ t("form.remindBefore") }}</span>
       <input
-        v-model="form.remindBeforeMinutes"
+        v-model="form.remindBeforeDays"
         type="number"
         min="0"
-        step="5"
+        step="1"
         required
         :disabled="submitting"
       />
@@ -127,10 +127,10 @@ function handleSubmit() {
           v-for="preset in REMINDER_PRESETS"
           :key="preset.label"
           class="preset-button"
-          :class="{ 'preset-button-active': Number(form.remindBeforeMinutes) === preset.minutes }"
+          :class="{ 'preset-button-active': Number(form.remindBeforeDays) === preset.days }"
           type="button"
           :disabled="submitting"
-          @click="form.remindBeforeMinutes = preset.minutes"
+          @click="form.remindBeforeDays = preset.days"
         >
           {{ preset.label }}
         </button>

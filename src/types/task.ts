@@ -3,7 +3,7 @@ export interface Task {
   title: string;
   notes: string;
   dueAt: string;
-  remindBeforeMinutes: number;
+  remindBeforeDays: number;
   triggerAt: string;
   completed: boolean;
   archived: boolean;

@@ -58,7 +58,7 @@ function handleRemove() {
       </div>
       <div>
         <dt>{{ t("task.leadTime") }}</dt>
-        <dd>{{ t("task.minutes", { count: task.remindBeforeMinutes }) }}</dd>
+        <dd>{{ t("task.days", { count: task.remindBeforeDays }) }}</dd>
       </div>
     </dl>
 
