@@ -47,6 +47,7 @@ const form = reactive({
 });
 
 const errorMessage = ref("");
+const localSubmitting = ref(false);
 const { t } = useI18n();
 
 watch(
@@ -69,6 +70,10 @@ const triggerPreview = computed(() => {
 });
 
 function handleSubmit() {
+  if (props.submitting || localSubmitting.value) {
+    return;
+  }
+
   const title = form.title.trim();
   const remindBeforeDays = Number(form.remindBeforeDays);
 
@@ -82,6 +87,8 @@ function handleSubmit() {
     return;
   }
 
+  localSubmitting.value = true;
+
   emit("submit", {
     title,
     notes: form.notes.trim(),
@@ -89,23 +96,33 @@ function handleSubmit() {
     remindBeforeDays,
   });
 }
+
+watch(
+  () => props.submitting,
+  (value) => {
+    if (!value) {
+      localSubmitting.value = false;
+    }
+  },
+  { immediate: true },
+);
 </script>
 
 <template>
   <form class="task-form" @submit.prevent="handleSubmit">
     <label>
       <span>{{ t("form.title") }}</span>
-      <input v-model="form.title" type="text" maxlength="120" required :disabled="submitting" />
+      <input v-model="form.title" type="text" maxlength="120" required :disabled="submitting || localSubmitting" />
     </label>
 
     <label>
       <span>{{ t("form.notes") }}</span>
-      <textarea v-model="form.notes" rows="4" :disabled="submitting" />
+      <textarea v-model="form.notes" rows="4" :disabled="submitting || localSubmitting" />
     </label>
 
     <label>
       <span>{{ t("form.dueTime") }}</span>
-      <input v-model="form.dueAt" type="datetime-local" required :disabled="submitting" />
+      <input v-model="form.dueAt" type="datetime-local" required :disabled="submitting || localSubmitting" />
     </label>
 
     <label>
@@ -116,7 +133,7 @@ function handleSubmit() {
         min="0"
         step="1"
         required
-        :disabled="submitting"
+        :disabled="submitting || localSubmitting"
       />
     </label>
 
@@ -129,7 +146,7 @@ function handleSubmit() {
           class="preset-button"
           :class="{ 'preset-button-active': Number(form.remindBeforeDays) === preset.days }"
           type="button"
-          :disabled="submitting"
+          :disabled="submitting || localSubmitting"
           @click="form.remindBeforeDays = preset.days"
         >
           {{ preset.label }}
@@ -144,8 +161,8 @@ function handleSubmit() {
 
     <p v-if="errorMessage" class="form-error">{{ t(errorMessage) }}</p>
 
-    <button class="primary-button" type="submit" :disabled="submitting">
-      {{ submitting ? t("editor.saving") : submitLabel || t("editor.editSubmit") }}
+    <button class="primary-button" type="submit" :disabled="submitting || localSubmitting">
+      {{ submitting || localSubmitting ? t("editor.saving") : submitLabel || t("editor.editSubmit") }}
     </button>
   </form>
 </template>
