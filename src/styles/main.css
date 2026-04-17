@@ -238,10 +238,6 @@ button:disabled {
   line-height: 1.2;
 }
 
-.language-section .language-switch {
-  background: rgba(255, 255, 255, 0.44);
-}
-
 .settings-overlay {
   position: fixed;
   inset: 0;
@@ -293,6 +289,22 @@ button:disabled {
 .settings-group p {
   margin: 0;
   color: #536170;
+}
+
+.settings-status-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.settings-label {
+  color: #536170;
+  font-size: 0.9rem;
+}
+
+.settings-action-button {
+  justify-self: start;
 }
 
 .nav-section-description {
@@ -695,28 +707,12 @@ button:disabled {
     align-items: flex-start;
   }
 
-  .nav-section,
-  .status-section,
-  .language-section {
+  .nav-section {
     width: 100%;
   }
 
   .nav-section {
     padding: 18px;
-  }
-
-  .status-strip {
-    width: 100%;
-    gap: 8px;
-  }
-
-  .status-pill {
-    padding: 8px 12px;
-  }
-
-  .status-label,
-  .status-pill strong {
-    font-size: 0.86rem;
   }
 
   .calendar-weekdays,

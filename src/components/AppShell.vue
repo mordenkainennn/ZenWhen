@@ -2,6 +2,7 @@
 import { onMounted, onUnmounted, ref } from "vue";
 import { RouterLink, RouterView, useRoute } from "vue-router";
 import { useI18n } from "@/i18n";
+import { requestNotificationPermission } from "@/services/notification-service";
 import { useTaskStore } from "@/stores/task";
 import { todayKey } from "@/utils/date";
 
@@ -50,6 +51,32 @@ function handleBeforeInstallPrompt(event: Event) {
 function handleAppInstalled() {
   installPromptEvent.value = null;
   installState.value = "installed";
+}
+
+async function enableNotifications() {
+  const permission = await requestNotificationPermission();
+  taskStore.setNotificationPermission(permission);
+
+  if (permission === "granted") {
+    await taskStore.syncTriggeredNotifications();
+  }
+}
+
+async function installApp() {
+  if (!installPromptEvent.value) {
+    return;
+  }
+
+  await installPromptEvent.value.prompt();
+  const choice = await installPromptEvent.value.userChoice;
+
+  if (choice.outcome === "accepted") {
+    installState.value = "installed";
+    installPromptEvent.value = null;
+    return;
+  }
+
+  installState.value = "available";
 }
 
 function openSettings() {
@@ -132,42 +159,6 @@ onUnmounted(() => {
       </nav>
     </section>
 
-    <section class="status-section" :aria-label="t('app.statusTitle')">
-      <p class="page-kicker">{{ t("app.statusTitle") }}</p>
-      <div class="status-strip">
-        <span class="status-pill">
-          <span class="status-label">{{ t("app.notifications") }}</span>
-          <strong>{{ t(`notification.${taskStore.notificationPermission}`) }}</strong>
-        </span>
-        <span class="status-pill">
-          <span class="status-label">{{ t("app.install") }}</span>
-          <strong>{{ t(`install.${installState}`) }}</strong>
-        </span>
-      </div>
-    </section>
-
-    <section class="language-section">
-      <p class="page-kicker">{{ t("app.languageSection") }}</p>
-      <div class="language-switch" role="group" :aria-label="t('app.languageSwitch')">
-        <button
-          class="secondary-button language-button"
-          :class="{ 'language-button-active': locale === 'zh-CN' }"
-          type="button"
-          @click="setLocale('zh-CN')"
-        >
-          {{ t("app.lang.zh") }}
-        </button>
-        <button
-          class="secondary-button language-button"
-          :class="{ 'language-button-active': locale === 'en' }"
-          type="button"
-          @click="setLocale('en')"
-        >
-          {{ t("app.lang.en") }}
-        </button>
-      </div>
-    </section>
-
     <div
       v-if="isSettingsOpen"
       class="settings-overlay"
@@ -191,17 +182,58 @@ onUnmounted(() => {
 
         <section class="settings-group">
           <h3>{{ t("settings.notifications") }}</h3>
-          <p>{{ t("settings.notificationsPlaceholder") }}</p>
+          <p class="settings-status-line">
+            <span class="settings-label">{{ t("settings.currentStatus") }}</span>
+            <strong>{{ t(`notification.${taskStore.notificationPermission}`) }}</strong>
+          </p>
+          <p>{{ t("settings.notificationsDescription") }}</p>
+          <button
+            v-if="taskStore.notificationPermission !== 'granted'"
+            class="secondary-button settings-action-button"
+            type="button"
+            @click="enableNotifications"
+          >
+            {{ t("app.enableNotifications") }}
+          </button>
         </section>
 
         <section class="settings-group">
           <h3>{{ t("settings.install") }}</h3>
-          <p>{{ t("settings.installPlaceholder") }}</p>
+          <p class="settings-status-line">
+            <span class="settings-label">{{ t("settings.currentStatus") }}</span>
+            <strong>{{ t(`install.${installState}`) }}</strong>
+          </p>
+          <p>{{ t("settings.installDescription") }}</p>
+          <button
+            v-if="installState === 'available'"
+            class="secondary-button settings-action-button"
+            type="button"
+            @click="installApp"
+          >
+            {{ t("app.installApp") }}
+          </button>
         </section>
 
         <section class="settings-group">
           <h3>{{ t("settings.language") }}</h3>
-          <p>{{ t("settings.languagePlaceholder") }}</p>
+          <div class="language-switch" role="group" :aria-label="t('app.languageSwitch')">
+            <button
+              class="secondary-button language-button"
+              :class="{ 'language-button-active': locale === 'zh-CN' }"
+              type="button"
+              @click="setLocale('zh-CN')"
+            >
+              {{ t("app.lang.zh") }}
+            </button>
+            <button
+              class="secondary-button language-button"
+              :class="{ 'language-button-active': locale === 'en' }"
+              type="button"
+              @click="setLocale('en')"
+            >
+              {{ t("app.lang.en") }}
+            </button>
+          </div>
         </section>
 
         <section class="settings-group">
