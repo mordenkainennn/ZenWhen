@@ -140,7 +140,6 @@ const messages: Record<AppLocale, Record<string, TranslationValue>> = {
     "settings.currentStatus": "当前状态",
     "settings.notificationsDescription": "开启后，任务会在触发时间通过系统通知提醒你。",
     "settings.installDescription": "安装后，ZenWhen 会更接近原生应用的使用体验。",
-    "settings.versionPlaceholder": "版本信息将在下一步接入这里。",
   },
   en: {
     "app.name": "ZenWhen",
@@ -272,7 +271,6 @@ const messages: Record<AppLocale, Record<string, TranslationValue>> = {
     "settings.currentStatus": "Current status",
     "settings.notificationsDescription": "When enabled, tasks can notify you through system alerts at their trigger time.",
     "settings.installDescription": "Installing ZenWhen makes it behave more like a native app.",
-    "settings.versionPlaceholder": "Version information will be wired in here in the next step.",
   },
 };
 

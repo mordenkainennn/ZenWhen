@@ -11,6 +11,7 @@ const taskStore = useTaskStore();
 const installPromptEvent = ref<BeforeInstallPromptEvent | null>(null);
 const installState = ref<"available" | "installed" | "unsupported">("unsupported");
 const isSettingsOpen = ref(false);
+const APP_VERSION = "0.1.0";
 const { locale, setLocale, t } = useI18n();
 
 const navItems = [
@@ -238,7 +239,7 @@ onUnmounted(() => {
 
         <section class="settings-group">
           <h3>{{ t("settings.version") }}</h3>
-          <p>{{ t("settings.versionPlaceholder") }}</p>
+          <p class="settings-version">v{{ APP_VERSION }}</p>
         </section>
       </section>
     </div>
