@@ -65,6 +65,18 @@ button:disabled {
   box-shadow: 0 20px 70px rgba(28, 36, 48, 0.08);
 }
 
+.hero-topbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hero-topbar-spacer {
+  width: 1px;
+  height: 1px;
+}
+
 .eyebrow,
 .page-kicker {
   margin: 0 0 10px;
@@ -157,6 +169,15 @@ button:disabled {
   color: #1c2430;
 }
 
+.settings-button {
+  padding: 10px 14px;
+  border: 1px solid rgba(28, 36, 48, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  color: #536170;
+  font-weight: 600;
+}
+
 .danger-button {
   background: #fbe7e2;
   color: #9c3f25;
@@ -219,6 +240,59 @@ button:disabled {
 
 .language-section .language-switch {
   background: rgba(255, 255, 255, 0.44);
+}
+
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(28, 36, 48, 0.32);
+}
+
+.settings-panel {
+  width: min(100%, 560px);
+  max-height: min(80vh, 760px);
+  overflow: auto;
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+  border-radius: 24px;
+  border: 1px solid rgba(28, 36, 48, 0.08);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 24px 90px rgba(28, 36, 48, 0.18);
+}
+
+.settings-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.settings-panel-header h2,
+.settings-group h3 {
+  margin: 0;
+}
+
+.settings-close-button {
+  padding: 10px 14px;
+}
+
+.settings-group {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(28, 36, 48, 0.08);
+  background: rgba(251, 252, 253, 0.92);
+}
+
+.settings-group p {
+  margin: 0;
+  color: #536170;
 }
 
 .nav-section-description {
@@ -617,6 +691,10 @@ button:disabled {
     padding: 20px;
   }
 
+  .hero-topbar {
+    align-items: flex-start;
+  }
+
   .nav-section,
   .status-section,
   .language-section {
@@ -669,6 +747,17 @@ button:disabled {
 
   .loading-state {
     align-items: flex-start;
+  }
+
+  .settings-panel {
+    width: 100%;
+    max-height: 100%;
+    border-radius: 20px;
+    padding: 20px;
+  }
+
+  .settings-panel-header {
+    flex-direction: column;
   }
 }
 

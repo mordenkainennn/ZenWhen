@@ -9,6 +9,7 @@ const route = useRoute();
 const taskStore = useTaskStore();
 const installPromptEvent = ref<BeforeInstallPromptEvent | null>(null);
 const installState = ref<"available" | "installed" | "unsupported">("unsupported");
+const isSettingsOpen = ref(false);
 const { locale, setLocale, t } = useI18n();
 
 const navItems = [
@@ -51,6 +52,20 @@ function handleAppInstalled() {
   installState.value = "installed";
 }
 
+function openSettings() {
+  isSettingsOpen.value = true;
+}
+
+function closeSettings() {
+  isSettingsOpen.value = false;
+}
+
+function handleKeydown(event: KeyboardEvent) {
+  if (event.key === "Escape" && isSettingsOpen.value) {
+    closeSettings();
+  }
+}
+
 onMounted(() => {
   const isStandalone =
     window.matchMedia("(display-mode: standalone)").matches ||
@@ -62,17 +77,26 @@ onMounted(() => {
 
   window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
   window.addEventListener("appinstalled", handleAppInstalled);
+  window.addEventListener("keydown", handleKeydown);
 });
 
 onUnmounted(() => {
   window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
   window.removeEventListener("appinstalled", handleAppInstalled);
+  window.removeEventListener("keydown", handleKeydown);
 });
 </script>
 
 <template>
   <div class="app-shell">
     <header class="hero">
+      <div class="hero-topbar">
+        <div class="hero-topbar-spacer"></div>
+        <button class="settings-button" type="button" @click="openSettings">
+          {{ t("app.settings") }}
+        </button>
+      </div>
+
       <div class="hero-copy-block">
         <p class="eyebrow">{{ t("app.name") }}</p>
         <h1 class="hero-title">{{ t("app.heroTitle") }}</h1>
@@ -143,5 +167,48 @@ onUnmounted(() => {
         </button>
       </div>
     </section>
+
+    <div
+      v-if="isSettingsOpen"
+      class="settings-overlay"
+      @click.self="closeSettings"
+    >
+      <section
+        class="settings-panel"
+        role="dialog"
+        aria-modal="true"
+        :aria-labelledby="'settings-title'"
+      >
+        <header class="settings-panel-header">
+          <div>
+            <p class="page-kicker">{{ t("app.settings") }}</p>
+            <h2 id="settings-title">{{ t("settings.title") }}</h2>
+          </div>
+          <button class="secondary-button settings-close-button" type="button" @click="closeSettings">
+            {{ t("settings.close") }}
+          </button>
+        </header>
+
+        <section class="settings-group">
+          <h3>{{ t("settings.notifications") }}</h3>
+          <p>{{ t("settings.notificationsPlaceholder") }}</p>
+        </section>
+
+        <section class="settings-group">
+          <h3>{{ t("settings.install") }}</h3>
+          <p>{{ t("settings.installPlaceholder") }}</p>
+        </section>
+
+        <section class="settings-group">
+          <h3>{{ t("settings.language") }}</h3>
+          <p>{{ t("settings.languagePlaceholder") }}</p>
+        </section>
+
+        <section class="settings-group">
+          <h3>{{ t("settings.version") }}</h3>
+          <p>{{ t("settings.versionPlaceholder") }}</p>
+        </section>
+      </section>
+    </div>
   </div>
 </template>
