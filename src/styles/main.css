@@ -70,11 +70,7 @@ button:disabled {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.hero-topbar-spacer {
-  width: 1px;
-  height: 1px;
+  gap: 16px;
 }
 
 .eyebrow,
@@ -84,6 +80,10 @@ button:disabled {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #8d6a31;
+}
+
+.hero-topbar .eyebrow {
+  margin-bottom: 0;
 }
 
 .hero h1,
@@ -718,7 +718,7 @@ button:disabled {
   }
 
   .hero-topbar {
-    align-items: flex-start;
+    align-items: center;
   }
 
   .nav-section {

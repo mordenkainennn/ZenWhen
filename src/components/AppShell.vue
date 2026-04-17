@@ -119,18 +119,16 @@ onUnmounted(() => {
   <div class="app-shell">
     <header class="hero">
       <div class="hero-topbar">
-        <div class="hero-topbar-spacer"></div>
+        <p class="eyebrow">{{ t("app.name") }}</p>
         <button class="settings-button" type="button" @click="openSettings">
           {{ t("app.settings") }}
         </button>
       </div>
 
       <div class="hero-copy-block">
-        <p class="eyebrow">{{ t("app.name") }}</p>
         <h1 class="hero-title">{{ t("app.heroTitle") }}</h1>
         <p class="hero-copy">{{ t("app.heroSubtitle") }}</p>
       </div>
-
     </header>
 
     <main class="content-panel">
